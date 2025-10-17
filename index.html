@@ -3,7 +3,34 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Groundflex Adventures | kwenye wenye viti</title>
+<title>Groundflex Adventures — Matatu photo rides & curated roadtrips in Kenya</title>
+<meta name="description" content="Groundflex Adventures offers curated matatu photo experiences and roadtrips across Kenya — neon night rides, golden-hour safaris, and culture-led tours. Book tours, pay securely, and get pro photography guidance." />
+<link rel="canonical" href="https://groundflexadventures.iyonicorp.com/" />
+<meta name="robots" content="index, follow" />
+<meta name="keywords" content="Groundflex, matatu, matatu culture, Nairobi tours, photo tours, roadtrip, Kenya, photography tours, golden hour safari, chrome jungle night" />
+<meta name="theme-color" content="#0f172a" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Groundflex Adventures — Matatu photo rides & curated roadtrips in Kenya" />
+<meta property="og:description" content="Join curated matatu photo rides and roadtrips across Kenya. Neon nights, waterfall expeditions and golden-hour sessions — perfect for creators and culture lovers." />
+<meta property="og:url" content="https://groundflexadventures.iyonicorp.com/" />
+<meta property="og:image" content="https://groundflexadventures.iyonicorp.com/og-image.jpg" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Groundflex Adventures — Matatu photo rides & curated roadtrips in Kenya" />
+<meta name="twitter:description" content="Curated matatu photo tours, night rides and scenic roadtrips — book a seat, pay securely, and get pro photography support." />
+<meta name="twitter:image" content="https://groundflexadventures.iyonicorp.com/og-image.jpg" />
+
+<link rel="icon" href="/favicon.ico" />
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+<!-- Structured data (Organization) -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Groundflex Adventures","url":"https://groundflexadventures.iyonicorp.com","logo":"https://groundflexadventures.iyonicorp.com/logo.png","sameAs":[]}
+</script>
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <!-- PayPal SDK - uncomment and add your real client ID when ready
 <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
@@ -2011,7 +2038,7 @@
         timestamp: new Date().toISOString()
       };
 
-      const response = await fetch('http://localhost:3000/api/send-confirmation', {
+      const response = await fetch('https://groundflexadventure.onrender.com/api/send-confirmation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
