@@ -13,13 +13,19 @@ app.use(express.static('./'));
 
 // Email configuration
 const transporter = nodemailer.createTransport({
-  service: process.env.EMAIL_SERVICE || 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // Use TLS
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
   },
+  // Timeout settings to prevent hanging connections
+  connectionTimeout: 60000, // 60 seconds
+  greetingTimeout: 30000,   // 30 seconds
+  socketTimeout: 60000,     // 60 seconds
   // For development: disable certificate verification if needed
-  // For production: remove this line and use proper Gmail App Password
+  // For production: set rejectUnauthorized to true
   tls: {
     rejectUnauthorized: process.env.NODE_ENV === 'production'
   }
