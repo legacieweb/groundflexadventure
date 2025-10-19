@@ -11,25 +11,29 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('./'));
 
-// Email configuration
+// ✅ Render-compatible Email Configuration
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // Use TLS
+  host: process.env.SMTP_HOST || 'smtp.gmail.com', // or your SMTP provider
+  port: parseInt(process.env.SMTP_PORT || '587', 10),
+  secure: false, // use STARTTLS
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
   },
-  // Timeout settings to prevent hanging connections
-  connectionTimeout: 60000, // 60 seconds
-  greetingTimeout: 30000,   // 30 seconds
-  socketTimeout: 60000,     // 60 seconds
-  // For development: disable certificate verification if needed
-  // For production: set rejectUnauthorized to true
+  // Extended timeouts (Render cold starts can delay SMTP handshake)
+  connectionTimeout: 60000, // 60s
+  greetingTimeout: 30000,   // 30s
+  socketTimeout: 60000,     // 60s
   tls: {
-    rejectUnauthorized: process.env.NODE_ENV === 'production'
+    // Gmail and Render IPs sometimes fail strict cert validation
+    rejectUnauthorized: false
   }
 });
+
+// 🔍 Verify SMTP connection on startup
+transporter.verify()
+  .then(() => console.log('✅ Email transporter verified — ready to send'))
+  .catch(err => console.error('❌ Email transporter error:', err));
 
 // Test email configuration
 transporter.verify((error, success) => {
