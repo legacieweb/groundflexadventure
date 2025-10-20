@@ -1063,6 +1063,15 @@
         </svg>
         Payments
       </a>
+      <a href="ticket-confirmation.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M9 12l2 2 4-4"/>
+          <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"/>
+          <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"/>
+          <path d="M12 3v18"/>
+        </svg>
+        Check Ticket
+      </a>
     </nav>
 <body>
 
@@ -1561,51 +1570,188 @@
   <div class="modal-backdrop" id="paymentModal" aria-hidden="true" role="dialog" aria-labelledby="payment-modal-title">
     <div class="modal-dialog">
       <button class="modal-close" data-close-payment-modal aria-label="Close payment modal">&times;</button>
-      <h3 id="payment-modal-title">Complete Payment</h3>
-      
-      <div id="paymentSummary"></div>
-      
+      <h3 id="payment-modal-title" style="color: white; margin-bottom: 24px; text-align: center;">💳 Complete Your Payment</h3>
+
+      <div id="paymentSummary" style="margin-bottom: 24px;"></div>
+
       <!-- Payment Amount Selection -->
-      <div style="margin: 20px 0; padding: 16px; background: rgba(249, 115, 22, 0.08); border-radius: 8px;">
-        <p style="font-weight: 600; margin-bottom: 12px; font-size: 0.95rem;">Choose Payment Amount:</p>
-        <div style="display: flex; gap: 10px; flex-direction: column;">
-          <label style="display: flex; align-items: center; cursor: pointer; padding: 10px; background: white; border-radius: 6px; border: 2px solid #f97316;">
-            <input type="radio" name="paymentAmount" value="deposit" checked style="margin-right: 10px; cursor: pointer;">
-            <div>
-              <div style="font-weight: 600;">50% Deposit (Mandatory)</div>
-              <div style="font-size: 0.85rem; color: #666;" id="depositAmountLabel">KES 0</div>
+      <div style="margin: 24px 0; padding: 24px; background: linear-gradient(135deg, rgba(249, 115, 22, 0.08), rgba(249, 115, 22, 0.04)); border-radius: 16px; border: 1px solid rgba(249, 115, 22, 0.15); position: relative; overflow: hidden;">
+        <!-- Animated background elements -->
+        <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(249, 115, 22, 0.03) 0%, transparent 70%); animation: rotate 20s linear infinite;"></div>
+        <div style="position: absolute; top: 10%; right: 10%; width: 20px; height: 20px; background: rgba(249, 115, 22, 0.2); border-radius: 50%; animation: float 3s ease-in-out infinite;"></div>
+        <div style="position: absolute; bottom: 15%; left: 15%; width: 15px; height: 15px; background: rgba(249, 115, 22, 0.15); border-radius: 50%; animation: float 4s ease-in-out infinite reverse;"></div>
+
+        <h4 style="color: var(--accent); margin: 0 0 20px; font-size: 1.1rem; text-align: center; position: relative; z-index: 2;">💰 Choose Your Payment Plan</h4>
+
+        <div style="display: flex; gap: 16px; flex-direction: column; position: relative; z-index: 2;">
+          <!-- Deposit Option -->
+          <label class="payment-option" data-option="deposit" style="display: flex; align-items: center; cursor: pointer; padding: 20px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95)); border-radius: 14px; border: 3px solid var(--accent); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 8px 25px rgba(249, 115, 22, 0.2); transform: scale(1); position: relative; overflow: hidden;">
+            <!-- Selection indicator -->
+            <div class="selection-ring" style="position: absolute; top: -3px; left: -3px; right: -3px; bottom: -3px; border: 3px solid transparent; border-radius: 17px; background: linear-gradient(45deg, var(--accent), #ea580c, var(--accent)); opacity: 1; animation: pulse 2s ease-in-out infinite;"></div>
+
+            <input type="radio" name="paymentAmount" value="deposit" checked style="margin-right: 16px; cursor: pointer; accent-color: var(--accent); width: 18px; height: 18px;">
+
+            <div style="flex: 1; position: relative; z-index: 2;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <div style="font-weight: 800; color: var(--dark); font-size: 1.1rem;">50% Deposit</div>
+                <div style="background: linear-gradient(135deg, var(--accent), #ea580c); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Required</div>
+              </div>
+              <div style="font-size: 1rem; color: #666; font-weight: 600; margin-bottom: 4px;" id="depositAmountLabel">KES 0</div>
+              <div style="font-size: 0.85rem; color: rgba(249, 115, 22, 0.9); font-weight: 500;">🔒 Secure your spot • Pay balance later</div>
             </div>
+
+            <div class="option-icon" style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #ea580c); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3); animation: bounce 1s ease-in-out infinite;">✓</div>
           </label>
-          <label style="display: flex; align-items: center; cursor: pointer; padding: 10px; background: white; border-radius: 6px; border: 2px solid #ddd;">
-            <input type="radio" name="paymentAmount" value="full" style="margin-right: 10px; cursor: pointer;">
-            <div>
-              <div style="font-weight: 600;">Full Amount</div>
-              <div style="font-size: 0.85rem; color: #666;" id="fullAmountLabel">KES 0</div>
+
+          <!-- Full Payment Option -->
+          <label class="payment-option" data-option="full" style="display: flex; align-items: center; cursor: pointer; padding: 20px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95)); border-radius: 14px; border: 3px solid rgba(255, 255, 255, 0.4); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); transform: scale(0.98); position: relative; overflow: hidden;">
+            <!-- Hover effect background -->
+            <div class="hover-bg" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(76, 175, 80, 0.05), rgba(76, 175, 80, 0.02)); opacity: 0; transition: opacity 0.3s ease;"></div>
+
+            <input type="radio" name="paymentAmount" value="full" style="margin-right: 16px; cursor: pointer; accent-color: var(--accent); width: 18px; height: 18px;">
+
+            <div style="flex: 1; position: relative; z-index: 2;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <div style="font-weight: 800; color: var(--dark); font-size: 1.1rem;">Full Payment</div>
+                <div style="background: linear-gradient(135deg, #4ade80, #22c55e); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Best Deal</div>
+              </div>
+              <div style="font-size: 1rem; color: #666; font-weight: 600; margin-bottom: 4px;" id="fullAmountLabel">KES 0</div>
+              <div style="font-size: 0.85rem; color: rgba(76, 175, 80, 0.9); font-weight: 500;">✨ Complete payment • No balance due</div>
             </div>
+
+            <div class="option-icon" style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #4ade80, #22c55e); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);">★</div>
           </label>
         </div>
       </div>
-      
-      <div class="payment-options" style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
-        <button class="payment-btn paystack" id="paystackBtn">Paystack</button>
-        <button class="payment-btn paypal" id="paypalBtn">PayPal</button>
-        <button class="payment-btn" id="mobileMoneyBtn">M-Pesa</button>
+
+      <style>
+        @keyframes rotate {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.8; transform: scale(1.02); }
+        }
+
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+          40% { transform: translateY(-4px); }
+          60% { transform: translateY(-2px); }
+        }
+
+        .payment-option:hover {
+          transform: scale(1.02) !important;
+        }
+
+        .payment-option:hover .hover-bg {
+          opacity: 1;
+        }
+
+        .payment-option[data-option="deposit"]:hover .option-icon {
+          animation: bounce 0.6s ease-in-out infinite;
+        }
+
+        .payment-option[data-option="full"]:hover .option-icon {
+          animation: bounce 0.6s ease-in-out infinite;
+        }
+
+        input[name="paymentAmount"]:checked + div + div + .option-icon {
+          animation: bounce 0.8s ease-in-out;
+        }
+
+        input[name="paymentAmount"][value="deposit"]:checked {
+          accent-color: var(--accent);
+        }
+
+        input[name="paymentAmount"][value="full"]:checked {
+          accent-color: #4ade80;
+        }
+
+        /* Selection animations */
+        input[name="paymentAmount"]:checked ~ .selection-ring {
+          opacity: 1;
+        }
+
+        .payment-option:not(:has(input[name="paymentAmount"]:checked)) .selection-ring {
+          opacity: 0;
+        }
+      </style>
+
+      <!-- Paystack Payment Button -->
+      <div style="text-align: center; margin-top: 32px;">
+        <button id="paystackBtn" style="width: 100%; padding: 16px 24px; background: linear-gradient(135deg, var(--accent), #ea580c); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(249, 115, 22, 0.3); text-transform: uppercase; letter-spacing: 0.5px;">
+          <span style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+            Pay Securely with Paystack
+          </span>
+        </button>
+        <p style="margin: 12px 0 0; font-size: 0.85rem; color: rgba(226, 232, 240, 0.7);">
+          🔒 Secure payment powered by Paystack • Instant confirmation
+        </p>
       </div>
-      
-      <div id="paypal-button-container" style="display: none; margin-top: 20px;"></div>
-      
-      <div id="paymentSuccess" style="display: none; text-align: center; color: #4ade80; margin-top: 10px;">
-        <p>✓ Payment Successful!</p>
-        <p>Confirmation details have been sent to your email.</p>
-      </div>
-      
-      <div id="mobileMoneyInfo" style="display: none; text-align: center; margin-top: 20px; padding: 16px; background: rgba(249, 115, 22, 0.12); border-radius: 8px;">
-        <p><strong>M-Pesa Payment</strong></p>
-        <p>Send payment to: <strong>0718192656</strong></p>
-        <p style="font-size: 0.9rem; margin-top: 8px;">Reference: <span id="mpesaRef"></span></p>
+
+      <div id="paymentSuccess" style="display: none; text-align: center; margin-top: 24px; padding: 20px; background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05)); border-radius: 12px; border: 1px solid rgba(76, 175, 80, 0.3);">
+        <div style="font-size: 2rem; margin-bottom: 12px;">🎉</div>
+        <h4 style="color: #4ade80; margin: 0 0 8px;">Payment Successful!</h4>
+        <p style="color: rgba(226, 232, 240, 0.9); margin: 0; font-size: 0.95rem;">Your ticket confirmation has been sent to your email.</p>
       </div>
     </div>
   </div>
+
+  <!-- ===== Ticket Confirmation Section ===== -->
+  <section id="ticket-confirmation" aria-labelledby="ticket-heading">
+    <div class="section-title">
+      <h2 id="ticket-heading">Check Your Ticket Status</h2>
+    </div>
+
+    <div class="booking" role="region" aria-label="Ticket confirmation">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 16px;">
+          <path d="M9 12l2 2 4-4"/>
+          <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"/>
+          <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"/>
+          <path d="M12 3v18"/>
+        </svg>
+        <h3 style="margin: 0 0 12px; color: white;">Need to Check Your Booking?</h3>
+        <p style="margin: 0 0 20px; color: rgba(226, 232, 240, 0.9);">
+          After booking your Groundflex adventure, you'll receive a unique ticket number via email.
+          Use our ticket confirmation tool to view your booking details, payment status, and event information.
+        </p>
+      </div>
+
+      <div style="background: rgba(249, 115, 22, 0.08); border-radius: 12px; padding: 20px; margin-bottom: 24px; border-left: 4px solid var(--accent);">
+        <h4 style="margin: 0 0 12px; color: var(--accent); font-size: 1.1rem;">How Ticket Confirmation Works:</h4>
+        <ul style="margin: 0; padding-left: 20px; color: rgba(226, 232, 240, 0.9); line-height: 1.6;">
+          <li><strong>Enter Details:</strong> Provide your ticket number and the email address used for booking</li>
+          <li><strong>Instant Access:</strong> View complete booking details, payment status, and event information</li>
+          <li><strong>Payment Tracking:</strong> See amount paid, balance remaining, and payment history</li>
+          <li><strong>Event Details:</strong> Confirm tour date, location, number of seats, and special instructions</li>
+          <li><strong>Secure & Private:</strong> Your booking information is protected and only accessible with your ticket number</li>
+        </ul>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="ticket-confirmation.html" class="cta" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 18px; height: 18px;">
+            <path d="M9 12l2 2 4-4"/>
+            <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"/>
+            <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"/>
+            <path d="M12 3v18"/>
+          </svg>
+          Check My Ticket
+        </a>
+      </div>
+    </div>
+  </section>
 
   <footer>
     <div>&copy; <span id="year"></span> Groundflex Adventures — All rights reserved.</div>
@@ -1845,24 +1991,24 @@
 
   // Paystack payment
   document.addEventListener('click', (event) => {
-    if (event.target.classList.contains('paystack')) {
+    if (event.target.id === 'paystackBtn' || event.target.closest('#paystackBtn')) {
       event.preventDefault();
       // Get form data from booking form (which has the user inputs)
       const emailInput = bookingForm?.querySelector('input[name="email"]');
       const nameInput = bookingForm?.querySelector('input[name="fullName"]');
-      
+
       if (!emailInput?.value || !nameInput?.value) {
         alert('Please fill in your email and name before paying.');
         return;
       }
-      
+
       const email = emailInput.value;
       const name = nameInput.value;
-      
+
       // Get selected payment amount
       const selectedAmount = document.querySelector('input[name="paymentAmount"]:checked')?.value || 'deposit';
       const amounts = window.paymentAmounts || {};
-      
+
       // Calculate amount in cents based on selection
       let amountInCents;
       let paymentLabel;
@@ -1892,9 +2038,9 @@
             successDiv.style.display = 'block';
             setTimeout(() => generateTicketPDF(name, email, response.reference, selectedAmount, amounts), 1000);
           }
-          // Hide payment options and selection
-          const paymentOptions = paymentModal?.querySelector('.payment-options');
-          if (paymentOptions) paymentOptions.style.display = 'none';
+          // Hide payment button and selection
+          const paystackBtn = document.getElementById('paystackBtn');
+          if (paystackBtn) paystackBtn.style.display = 'none';
           const amountSelection = document.querySelector('[name="paymentAmount"]')?.closest('div');
           if (amountSelection?.parentElement) amountSelection.parentElement.style.display = 'none';
         },
@@ -1906,158 +2052,157 @@
     }
   });
 
-  // PayPal payment
-  document.addEventListener('click', (event) => {
-    if (event.target.classList.contains('paypal')) {
-      event.preventDefault();
-      
-      if (typeof paypal === 'undefined') {
-        alert('PayPal is not loaded. Please configure your PayPal client ID first.');
-        return;
-      }
 
-      // Get form data from booking form
-      const emailInput = bookingForm?.querySelector('input[name="email"]');
-      const nameInput = bookingForm?.querySelector('input[name="fullName"]');
-      
-      if (!emailInput?.value || !nameInput?.value) {
-        alert('Please fill in your email and name before paying.');
-        return;
-      }
-
-      const name = nameInput.value;
-      const email = emailInput.value;
-      
-      // Get selected payment amount
-      const selectedAmount = document.querySelector('input[name="paymentAmount"]:checked')?.value || 'deposit';
-      const amounts = window.paymentAmounts || {};
-      
-      // Calculate amount based on selection (PayPal uses USD)
-      let amount;
-      if (selectedAmount === 'full') {
-        amount = (amounts.totalPrice || 0) / 130; // Rough KES to USD conversion (adjust as needed)
-      } else {
-        amount = (amounts.depositAmount || 0) / 130; // 50% deposit
-      }
-
-      // Show PayPal button container
-      const paypalContainer = document.getElementById('paypal-button-container');
-      if (paypalContainer) {
-        paypalContainer.style.display = 'block';
-        // Initialize PayPal payment
-        paypal.Buttons({
-          createOrder: function(data, actions) {
-            return actions.order.create({
-              purchase_units: [{
-                amount: {
-                  value: amount.toFixed(2)
-                }
-              }]
-            });
-          },
-          onApprove: function(data, actions) {
-            return actions.order.capture().then(function(details) {
-              // Payment successful
-              const successDiv = document.getElementById('paymentSuccess');
-              if (successDiv) {
-                successDiv.style.display = 'block';
-                setTimeout(() => generateTicketPDF(name, email, details.id, selectedAmount, amounts), 1000);
-              }
-              // Hide payment options and PayPal container
-              const paymentOptions = paymentModal?.querySelector('.payment-options');
-              if (paymentOptions) paymentOptions.style.display = 'none';
-              const amountSelection = document.querySelector('[name="paymentAmount"]')?.closest('div');
-              if (amountSelection?.parentElement) amountSelection.parentElement.style.display = 'none';
-              paypalContainer.style.display = 'none';
-            });
-          }
-        }).render('#paypal-button-container');
-      }
-    }
-  });
+  // Function to generate unique ticket number
+  function generateTicketNumber() {
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+    return `GF-${timestamp}-${random}`;
+  }
 
   // Function to generate and download PDF ticket
   function generateTicketPDF(name, email, reference, selectedAmount = 'deposit', amounts = {}) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     
+    // Generate unique ticket number
+    const ticketNumber = generateTicketNumber();
+    
     const paymentType = selectedAmount === 'full' ? 'Full Payment' : 'Deposit (50%)';
     const paidAmount = selectedAmount === 'full' ? amounts.totalPrice : amounts.depositAmount;
+    const balanceRemaining = selectedAmount === 'full' ? 0 : (amounts.totalPrice - amounts.depositAmount);
+    const eventDate = document.getElementById('eventId')?.value ? (events[document.getElementById('eventId').value]?.date || 'TBA') : 'TBA';
+    const eventLocation = amounts.eventLocation || 'Kirinyaga, Kenya';
 
-    doc.setFontSize(20);
-    doc.text('Groundflex Adventures Ticket', 20, 30);
+    // PDF Header
+    doc.setFontSize(22);
+    doc.setTextColor(249, 115, 22); // Orange color
+    doc.text('🔥 GROUNDFLEX ADVENTURES 🔥', 20, 20);
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(14);
+    doc.text('BOOKING TICKET RECEIPT', 20, 35);
+    
+    // Ticket Number (prominent)
+    doc.setFontSize(11);
+    doc.setTextColor(100, 100, 100);
+    doc.text('Ticket Number:', 20, 48);
     doc.setFontSize(12);
-    doc.text(`Name: ${name}`, 20, 50);
-    doc.text(`Email: ${email}`, 20, 60);
-    doc.text(`Tour: ${amounts.eventName || 'THIBA FALLS'}`, 20, 70);
-    doc.text(`Seats: ${amounts.numberOfPeople || 1}`, 20, 80);
-    doc.text(`Payment Type: ${paymentType}`, 20, 90);
-    doc.text(`Amount Paid: KES ${(paidAmount || 0).toLocaleString()}`, 20, 100);
-    doc.text(`Reference: ${reference}`, 20, 110);
+    doc.setTextColor(249, 115, 22);
+    doc.text(ticketNumber, 20, 56);
+    
+    // Customer Information
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.text('─'.repeat(60), 20, 65);
+    
+    doc.setFontSize(11);
+    doc.text('CUSTOMER INFORMATION', 20, 72);
+    doc.setFontSize(10);
+    doc.text(`Name: ${name}`, 20, 80);
+    doc.text(`Email: ${email}`, 20, 87);
+    doc.text(`Phone: ${bookingForm?.querySelector('input[name="phone"]')?.value || 'N/A'}`, 20, 94);
+    
+    // Event Information
+    doc.text('─'.repeat(60), 20, 103);
+    doc.setFontSize(11);
+    doc.text('EVENT INFORMATION', 20, 110);
+    doc.setFontSize(10);
+    doc.text(`Tour: ${amounts.eventName || 'THIBA FALLS'}`, 20, 118);
+    doc.text(`Date: ${eventDate}`, 20, 125);
+    doc.text(`Location: ${eventLocation}`, 20, 132);
+    doc.text(`Number of Seats: ${amounts.numberOfPeople || 1}`, 20, 139);
+    
+    // Payment Information
+    doc.text('─'.repeat(60), 20, 148);
+    doc.setFontSize(11);
+    doc.text('PAYMENT DETAILS', 20, 155);
+    doc.setFontSize(10);
+    doc.text(`Price per Seat: KES ${(amounts.eventPrice || 0).toLocaleString()}`, 20, 163);
+    doc.text(`Total Amount: KES ${(amounts.totalPrice || 0).toLocaleString()}`, 20, 170);
+    doc.text(`Payment Type: ${paymentType}`, 20, 177);
+    doc.setTextColor(249, 115, 22);
+    doc.text(`Amount Paid: KES ${(paidAmount || 0).toLocaleString()}`, 20, 184);
+    
+    doc.setTextColor(0, 0, 0);
+    if (balanceRemaining > 0) {
+      doc.setTextColor(200, 100, 0);
+      doc.text(`Balance Remaining: KES ${balanceRemaining.toLocaleString()}`, 20, 191);
+    } else {
+      doc.setTextColor(76, 175, 80);
+      doc.text('Status: FULLY PAID ✓', 20, 191);
+    }
+    
+    // Reference
+    doc.setTextColor(0, 0, 0);
+    doc.text('─'.repeat(60), 20, 200);
+    doc.setFontSize(10);
+    doc.text(`Payment Reference: ${reference}`, 20, 207);
+    
+    // Footer
+    doc.setFontSize(9);
+    doc.setTextColor(150, 150, 150);
+    doc.text('Generated: ' + new Date().toLocaleString(), 20, 260);
+    doc.text('Keep this ticket for check-in on event day', 20, 267);
+    
+    // Save the PDF
+    doc.save(`groundflex_ticket_${ticketNumber}.pdf`);
 
-    // Add QR code or barcode if needed
-    // For now, just save the PDF
-    doc.save('groundflex_ticket.pdf');
-
-    // Send confirmation email
-    sendConfirmationEmail(email, name, reference, selectedAmount, amounts);
+    // Store ticket data on backend
+    storeTicketData(ticketNumber, name, email, reference, selectedAmount, amounts);
   }
 
-  // Function to send confirmation email via backend API
-  async function sendConfirmationEmail(email, name, reference, selectedAmount = 'deposit', amounts = {}) {
+  // Function to store ticket data on backend
+  async function storeTicketData(ticketNumber, name, email, reference, selectedAmount = 'deposit', amounts = {}) {
     try {
-      // Use provided amounts or calculate from form
-      const eventName = amounts.eventName || document.getElementById('eventName')?.value || 'Groundflex Adventure';
-      const eventPrice = amounts.eventPrice || parseInt(document.getElementById('eventPrice')?.value) || 0;
-      const numberOfSeats = amounts.numberOfPeople || parseInt(bookingForm?.querySelector('[name="numberOfPeople"]')?.value) || 1;
+      const eventDate = document.getElementById('eventId')?.value ? (events[document.getElementById('eventId').value]?.date || 'TBA') : 'TBA';
+      const eventLocation = amounts.eventLocation || 'Kirinyaga, Kenya';
       const phone = bookingForm?.querySelector('input[name="phone"]')?.value || '';
-      
-      // Calculate amounts
-      const totalPrice = amounts.totalPrice || (eventPrice * numberOfSeats);
-      const depositAmount = amounts.depositAmount || Math.floor(totalPrice * 0.5);
-      
-      // Determine what was paid
+
+      const totalPrice = amounts.totalPrice || 0;
+      const depositAmount = amounts.depositAmount || 0;
       const amountPaid = selectedAmount === 'full' ? totalPrice : depositAmount;
       const paymentType = selectedAmount === 'full' ? 'Full Payment' : 'Deposit (50%)';
-      
-      const confirmationData = {
+      const isPaid = selectedAmount === 'full';
+
+      const ticketData = {
+        ticketNumber,
         name,
         email,
         phone,
-        eventName,
-        eventDate: 'TBD', // Get from form if available
-        eventLocation: 'Thiba Falls', // Get from form if available
-        numberOfSeats,
-        pricePerSeat: eventPrice,
+        eventName: amounts.eventName || 'Groundflex Adventure',
+        eventDate,
+        eventLocation,
+        numberOfSeats: amounts.numberOfPeople || 1,
+        pricePerSeat: amounts.eventPrice || 0,
         totalPrice,
         depositAmount,
         amountPaid,
         paymentType,
         paymentReference: reference,
-        paymentMethod: 'Paystack', // This could be dynamic based on payment method
+        paymentMethod: 'Paystack',
+        isPaid,
         timestamp: new Date().toISOString()
       };
 
-      const response = await fetch('https://groundflexadventure.onrender.com/api/send-confirmation', {
+      const response = await fetch('https://groundflexadventure-1.onrender.com/api/store-ticket', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(confirmationData)
+        body: JSON.stringify(ticketData)
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
-        console.log('✓ Confirmation sent successfully');
+        console.log('✓ Ticket stored successfully:', ticketNumber);
       } else {
-        console.error('Email send error:', result.error);
-        alert('Booking confirmed, but email notification failed. Your reference: ' + reference);
+        console.error('Error storing ticket:', result.error);
       }
     } catch (error) {
-      console.error('Error sending confirmation email:', error);
-      // Don't block the user experience if email fails
-      console.log('Confirmation email could not be sent, but payment was successful. Reference:', reference);
+      console.error('Error storing ticket data:', error);
+      console.log('Ticket stored locally. Reference:', reference);
     }
   }
 

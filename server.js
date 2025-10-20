@@ -1,60 +1,57 @@
 const express = require('express');
-const nodemailer = require('nodemailer');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = express();
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI)
+.then(() => console.log('✓ Connected to MongoDB'))
+.catch(err => console.error('✗ MongoDB connection error:', err));
+
+// Ticket Schema
+const ticketSchema = new mongoose.Schema({
+  ticketNumber: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  phone: { type: String },
+  eventName: { type: String, required: true },
+  eventDate: { type: String, required: true },
+  eventLocation: { type: String, required: true },
+  numberOfSeats: { type: Number, required: true },
+  pricePerSeat: { type: Number, required: true },
+  totalPrice: { type: Number, required: true },
+  depositAmount: { type: Number },
+  amountPaid: { type: Number, required: true },
+  paymentType: { type: String, required: true },
+  paymentReference: { type: String, required: true },
+  paymentMethod: { type: String, required: true },
+  isPaid: { type: Boolean, default: false },
+  timestamp: { type: Date, default: Date.now }
+});
+
+const Ticket = mongoose.model('Ticket', ticketSchema);
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('./'));
 
-// ✅ Render-compatible Email Configuration
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com', // or your SMTP provider
-  port: parseInt(process.env.SMTP_PORT || '587', 10),
-  secure: false, // use STARTTLS
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
-  },
-  // Extended timeouts (Render cold starts can delay SMTP handshake)
-  connectionTimeout: 60000, // 60s
-  greetingTimeout: 30000,   // 30s
-  socketTimeout: 60000,     // 60s
-  tls: {
-    // Gmail and Render IPs sometimes fail strict cert validation
-    rejectUnauthorized: false
-  }
-});
-
-// 🔍 Verify SMTP connection on startup
-transporter.verify()
-  .then(() => console.log('✅ Email transporter verified — ready to send'))
-  .catch(err => console.error('❌ Email transporter error:', err));
-
-// Test email configuration
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('Email configuration error:', error);
-  } else {
-    console.log('✓ Email service is ready');
-  }
-});
-
 // ===== API ENDPOINTS =====
 
 /**
- * POST /api/send-confirmation
- * Sends booking confirmation email and stores order data
+ * POST /api/store-ticket
+ * Store ticket data after successful payment
  */
-app.post('/api/send-confirmation', async (req, res) => {
+app.post('/api/store-ticket', async (req, res) => {
   try {
     const {
+      ticketNumber,
       name,
       email,
+      phone,
       eventName,
       eventDate,
       eventLocation,
@@ -66,157 +63,98 @@ app.post('/api/send-confirmation', async (req, res) => {
       paymentType,
       paymentReference,
       paymentMethod,
+      isPaid,
       timestamp
     } = req.body;
 
     // Validate required fields
-    if (!name || !email || !eventName || !paymentReference) {
+    if (!ticketNumber || !email || !eventName || !paymentReference) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Email template
-    const emailHTML = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body { font-family: 'Poppins', sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #f97316, #ea580c); color: white; padding: 30px; border-radius: 8px; text-align: center; margin-bottom: 30px; }
-          .header h1 { margin: 0; font-size: 24px; }
-          .header p { margin: 5px 0 0; opacity: 0.95; }
-          .content { background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-          .section { margin-bottom: 20px; }
-          .section-title { font-weight: 600; color: #f97316; margin-bottom: 10px; font-size: 14px; text-transform: uppercase; }
-          .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ddd; }
-          .detail-row:last-child { border-bottom: none; }
-          .detail-label { font-weight: 500; color: #666; }
-          .detail-value { color: #333; }
-          .highlight { background: #fff3e0; padding: 12px; border-left: 4px solid #f97316; border-radius: 4px; margin: 15px 0; }
-          .cta { display: inline-block; background: #f97316; color: white; padding: 12px 30px; border-radius: 6px; text-decoration: none; margin: 15px 0; text-align: center; }
-          .footer { text-align: center; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 12px; }
-          .reference { background: white; padding: 15px; border-radius: 6px; border: 2px dashed #f97316; text-align: center; margin: 20px 0; }
-          .reference-label { font-size: 12px; color: #999; }
-          .reference-value { font-size: 18px; font-weight: bold; color: #f97316; font-family: monospace; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>🔥 Groundflex Adventures</h1>
-            <p>Your Booking Confirmation</p>
-          </div>
+    // Create new ticket document
+    const ticket = new Ticket({
+      ticketNumber,
+      name,
+      email,
+      phone,
+      eventName,
+      eventDate,
+      eventLocation,
+      numberOfSeats,
+      pricePerSeat,
+      totalPrice,
+      depositAmount,
+      amountPaid,
+      paymentType,
+      paymentReference,
+      paymentMethod,
+      isPaid,
+      timestamp
+    });
 
-          <div class="content">
-            <h2 style="margin-top: 0; color: #333;">Thank You, ${name}!</h2>
-            <p>Your booking has been confirmed. Here are your event details:</p>
+    // Save to MongoDB
+    await ticket.save();
 
-            <div class="section">
-              <div class="section-title">📅 Event Information</div>
-              <div class="detail-row">
-                <span class="detail-label">Event:</span>
-                <span class="detail-value"><strong>${eventName}</strong></span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Date:</span>
-                <span class="detail-value">${eventDate}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Location:</span>
-                <span class="detail-value">${eventLocation}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Group Size:</span>
-                <span class="detail-value">${numberOfSeats} ${numberOfSeats === 1 ? 'person' : 'people'}</span>
-              </div>
-            </div>
-
-            <div class="section">
-              <div class="section-title">💰 Payment Details</div>
-              <div class="detail-row">
-                <span class="detail-label">Price per seat:</span>
-                <span class="detail-value">KES ${pricePerSeat.toLocaleString()}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Total Amount:</span>
-                <span class="detail-value">KES ${totalPrice.toLocaleString()}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Payment Type:</span>
-                <span class="detail-value">${paymentType || 'Deposit (50%)'}</span>
-              </div>
-              <div class="detail-row" style="font-weight: bold;">
-                <span class="detail-label">Amount Paid:</span>
-                <span class="detail-value" style="color: #f97316;">KES ${(amountPaid || depositAmount).toLocaleString()}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Payment Method:</span>
-                <span class="detail-value">${paymentMethod}</span>
-              </div>
-            </div>
-
-            <div class="reference">
-              <div class="reference-label">Payment Reference</div>
-              <div class="reference-value">${paymentReference}</div>
-            </div>
-
-            <div class="highlight">
-              <strong>⚠️ Important:</strong> Please save your payment reference. You'll need it for check-in on the day of the event.
-            </div>
-
-            <div class="section" style="background: white; padding: 15px; border-radius: 6px;">
-              <div class="section-title">📋 Next Steps</div>
-              <ul style="margin: 10px 0; padding-left: 20px; color: #666;">
-                <li>Keep this email safe for reference</li>
-                <li>Arrive 15 minutes early on event day</li>
-                <li>Bring valid ID for verification</li>
-                <li>Any questions? Reply to this email</li>
-              </ul>
-            </div>
-
-            <p style="margin-top: 30px; color: #f97316; font-weight: 600;">🚐 Get ready for an unforgettable Groundflex Adventure!</p>
-          </div>
-
-          <div class="footer">
-            <p>Groundflex Adventures | ${new Date(timestamp).toLocaleDateString()}</p>
-            <p>For support, email: support@groundflexadventures.com</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-
-    // Send email
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: `✓ Booking Confirmed - ${eventName} - Groundflex Adventures`,
-      html: emailHTML,
-      replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_USER
-    };
-
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`✓ Email sent to ${email}:`, info.messageId);
-
-    // TODO: Save order to database
-    // const order = new Order({
-    //   name, email, eventName, eventDate, eventLocation,
-    //   numberOfSeats, pricePerSeat, totalPrice, depositAmount,
-    //   paymentReference, paymentMethod, timestamp
-    // });
-    // await order.save();
+    console.log(`✓ Ticket stored: ${ticketNumber}`);
 
     res.json({
       success: true,
-      message: 'Confirmation email sent successfully',
-      reference: paymentReference
+      message: 'Ticket stored successfully',
+      ticketNumber: ticketNumber
     });
 
   } catch (error) {
-    console.error('Error sending confirmation:', error);
+    console.error('Error storing ticket:', error);
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        error: 'Ticket number already exists'
+      });
+    }
     res.status(500).json({
       success: false,
-      error: 'Failed to send confirmation email',
+      error: 'Failed to store ticket',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/ticket/:ticketNumber
+ * Retrieve ticket details using ticket number and email
+ */
+app.get('/api/ticket/:ticketNumber', async (req, res) => {
+  try {
+    const { ticketNumber } = req.params;
+    const { email } = req.query;
+
+    if (!ticketNumber || !email) {
+      return res.status(400).json({ error: 'Ticket number and email are required' });
+    }
+
+    // Find ticket in MongoDB
+    const ticket = await Ticket.findOne({ ticketNumber: ticketNumber });
+
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    // Verify email matches
+    if (ticket.email.toLowerCase() !== email.toLowerCase()) {
+      return res.status(403).json({ error: 'Email does not match this ticket' });
+    }
+
+    res.json({
+      success: true,
+      ticket: ticket
+    });
+
+  } catch (error) {
+    console.error('Error retrieving ticket:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve ticket',
       message: error.message
     });
   }
@@ -252,65 +190,6 @@ app.post('/api/verify-payment', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Payment verification failed'
-    });
-  }
-});
-
-/**
- * POST /api/send-reminder
- * Send event reminder email (call 24 hours before event)
- */
-app.post('/api/send-reminder', async (req, res) => {
-  try {
-    const { email, eventName, eventDate, eventTime, eventLocation } = req.body;
-
-    const emailHTML = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body { font-family: 'Poppins', sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #f97316, #ea580c); color: white; padding: 30px; border-radius: 8px; text-align: center; }
-          .content { background: #f5f5f5; padding: 20px; border-radius: 8px; margin-top: 20px; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>🔔 Event Reminder</h1>
-          </div>
-          <div class="content">
-            <h2>Your Groundflex Adventure is Tomorrow!</h2>
-            <p>Don't miss out! Here's a quick reminder:</p>
-            <ul>
-              <li><strong>Event:</strong> ${eventName}</li>
-              <li><strong>Date:</strong> ${eventDate}</li>
-              <li><strong>Time:</strong> ${eventTime}</li>
-              <li><strong>Location:</strong> ${eventLocation}</li>
-            </ul>
-            <p><strong>See you soon! 🚐</strong></p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: `🔔 Reminder: ${eventName} Tomorrow!`,
-      html: emailHTML
-    };
-
-    await transporter.sendMail(mailOptions);
-    res.json({ success: true, message: 'Reminder sent' });
-
-  } catch (error) {
-    console.error('Error sending reminder:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to send reminder'
     });
   }
 });
