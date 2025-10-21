@@ -351,6 +351,96 @@
       animation: slideIn 300ms ease;
     }
 
+    /* Warning Banner for Used Tickets */
+    .ticket-used-banner {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.15) 100%);
+      border: 2px solid #ef4444;
+      border-left: 6px solid #ef4444;
+      padding: 24px;
+      border-radius: 12px;
+      margin-bottom: 28px;
+      animation: slideInBanner 500ms ease, pulse-border 2s ease infinite;
+      box-shadow: 0 8px 32px rgba(239, 68, 68, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ticket-used-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ef4444, transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { left: -100%; }
+      50% { left: 100%; }
+    }
+
+    @keyframes slideInBanner {
+      from {
+        opacity: 0;
+        transform: translateY(-20px) rotateX(5deg);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0);
+      }
+    }
+
+    @keyframes pulse-border {
+      0%, 100% {
+        box-shadow: 0 8px 32px rgba(239, 68, 68, 0.2), inset 0 0 0 0px rgba(239, 68, 68, 0);
+      }
+      50% {
+        box-shadow: 0 12px 40px rgba(239, 68, 68, 0.35), inset 0 0 0 2px rgba(239, 68, 68, 0.15);
+      }
+    }
+
+    .ticket-used-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .ticket-used-icon {
+      font-size: 2.5rem;
+      animation: pulse-icon 1.5s ease infinite;
+    }
+
+    @keyframes pulse-icon {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .ticket-used-title {
+      color: #fca5a5;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .ticket-used-subtitle {
+      margin: 12px 0 0;
+      color: rgba(252, 165, 165, 0.9);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ticket-used-date {
+      color: #fca5a5;
+      font-weight: 600;
+      font-family: 'Orbitron', monospace;
+    }
+
     .success-message {
       background: rgba(76, 175, 80, 0.1);
       border-left: 4px solid #4ade80;
@@ -420,6 +510,26 @@
 
       header {
         margin-bottom: 30px;
+      }
+
+      .ticket-used-banner {
+        padding: 16px;
+      }
+
+      .ticket-used-header {
+        gap: 12px;
+      }
+
+      .ticket-used-icon {
+        font-size: 2rem;
+      }
+
+      .ticket-used-title {
+        font-size: 1rem;
+      }
+
+      .ticket-used-subtitle {
+        font-size: 0.85rem;
       }
     }
 
@@ -499,6 +609,21 @@
   </div>
 
   <script>
+    // ===== ADMIN DATA INTEGRATION =====
+    const TicketSystem = {
+      // Get all tickets from admin system
+      getAllTickets() {
+        const data = localStorage.getItem('groundflex_tickets');
+        return data ? JSON.parse(data) : [];
+      },
+
+      // Check if ticket exists and matches email
+      getTicket(ticketId, email) {
+        const tickets = this.getAllTickets();
+        return tickets.find(t => t.id === ticketId && t.email === email);
+      }
+    };
+
     async function handleSearch(event) {
       event.preventDefault();
 
@@ -519,7 +644,38 @@
       searchBtn.disabled = true;
 
       try {
-        const response = await fetch(`https://groundflexadventure-1.onrender.com/api/ticket/${ticketNumber}?email=${encodeURIComponent(email)}`);
+        // First try to find ticket in admin system (localStorage)
+        const adminTicket = TicketSystem.getTicket(ticketNumber, email);
+
+        if (adminTicket) {
+          // Use admin system ticket data
+          displayTicketDetails({
+            ticketNumber: adminTicket.id,
+            name: adminTicket.name,
+            email: adminTicket.email,
+            phone: adminTicket.phone,
+            eventName: adminTicket.eventName,
+            eventDate: adminTicket.eventDate ? new Date(adminTicket.eventDate).toLocaleDateString() : 'N/A',
+            eventLocation: 'Groundflex Adventures - Kenya',
+            numberOfSeats: adminTicket.seats || 1,
+            pricePerSeat: adminTicket.price || 0,
+            totalPrice: adminTicket.price || 0,
+            amountPaid: adminTicket.price || 0,
+            isPaid: true,
+            paymentType: adminTicket.paymentType || 'Paid',
+            paymentMethod: 'Online Payment',
+            paymentReference: adminTicket.paymentRef || 'REF-' + adminTicket.id,
+            timestamp: adminTicket.createdAt,
+            status: adminTicket.status, // 'valid' or 'used'
+            usedAt: adminTicket.usedAt
+          });
+          successDiv.textContent = '✓ Ticket found! Here are your details.';
+          successDiv.classList.add('visible');
+          return;
+        }
+
+        // Fallback to backend API
+        const response = await fetch(`http://localhost:3000/api/ticket/${ticketNumber}?email=${encodeURIComponent(email)}`);
 
         if (!response.ok) {
           if (response.status === 404) {
@@ -535,7 +691,7 @@
           throw new Error(result.error || 'Failed to retrieve ticket');
         }
 
-        // Display ticket details
+        // Display ticket details from backend
         displayTicketDetails(result.ticket);
         successDiv.textContent = '✓ Ticket found! Here are your details.';
         successDiv.classList.add('visible');
@@ -555,9 +711,11 @@
       const balanceRemaining = ticket.totalPrice - ticket.amountPaid;
       const isPaid = ticket.isPaid || ticket.amountPaid >= ticket.totalPrice;
 
-      const statusClass = isPaid ? 'status-paid' : 'status-partial';
-      const statusText = isPaid ? '✓ FULLY PAID' : '⚠ BALANCE DUE';
-      const statusEmoji = isPaid ? '✅' : '⏳';
+      // Determine ticket validity status - Check MongoDB field 'isValidated'
+      const isUsed = ticket.isValidated === true;
+      const statusClass = isUsed ? 'status-partial' : (isPaid ? 'status-paid' : 'status-partial');
+      const statusText = isUsed ? '🔴 ALREADY USED' : (isPaid ? '✓ VALID - READY' : '⚠ BALANCE DUE');
+      const statusEmoji = isUsed ? '🔴' : (isPaid ? '✅' : '⏳');
 
       let balanceHTML = '';
       if (balanceRemaining > 0) {
@@ -570,6 +728,27 @@
         `;
       }
 
+      // Beautiful warning banner for used tickets
+      let usedWarning = '';
+      if (isUsed) {
+        const validatedDate = ticket.validatedAt ? new Date(ticket.validatedAt).toLocaleString() : 'Recently';
+        usedWarning = `
+          <div class="ticket-used-banner">
+            <div class="ticket-used-header">
+              <div class="ticket-used-icon">🎫✓</div>
+              <div class="ticket-used-title">TICKET ALREADY VALIDATED</div>
+            </div>
+            <div class="ticket-used-subtitle">
+              ✓ This ticket has been successfully scanned and validated by our admin team on 
+              <span class="ticket-used-date">${validatedDate}</span>
+            </div>
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(239, 68, 68, 0.3); color: rgba(252, 165, 165, 0.85); font-size: 0.9rem;">
+              <strong>Status:</strong> You've already checked in! If you need to validate another ticket, please enter a different ticket number.
+            </div>
+          </div>
+        `;
+      }
+
       detailsContent.innerHTML = `
         <div class="ticket-header">
           <div>Ticket Number</div>
@@ -577,6 +756,7 @@
           <div class="ticket-status ${statusClass}">${statusEmoji} ${statusText}</div>
         </div>
 
+        ${usedWarning}
         ${balanceHTML}
 
         <div class="details-grid">
@@ -666,6 +846,7 @@
             <li>Arrive 15 minutes early</li>
             <li>Bring valid ID for verification</li>
             ${balanceRemaining > 0 ? '<li><strong>⚠ Complete your payment before the event date</strong></li>' : ''}
+            ${isUsed ? '<li><strong style="color: #fca5a5;">✓ This ticket has been validated and used</strong></li>' : ''}
           </ul>
         </div>
       `;

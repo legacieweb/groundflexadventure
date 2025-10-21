@@ -458,11 +458,12 @@
   }
   .cta-row{ display:flex; gap:12px; flex-wrap:wrap; }
   .cta{
-    padding:12px 18px;
+    padding:10px 16px;
     border-radius:999px;
     border:0;
     cursor:pointer;
     font-weight:700;
+    font-size: 0.95rem;
     background:var(--accent);
     color:white;
     box-shadow: 0 10px 30px rgba(249,115,22,0.18);
@@ -500,9 +501,9 @@
   .roadtrip-section{
     position:relative;
     max-width:1080px;
-    margin:60px auto 40px;
+    margin:48px auto 32px;
     padding:32px;
-    border-radius:22px;
+    border-radius:20px;
     background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(17,24,39,0.65));
     color:#fff;
     box-shadow: 0 18px 60px rgba(15,23,42,0.55);
@@ -524,7 +525,7 @@
     text-align: center;
     font-size: clamp(1.8rem, 5vw, 2.4rem);
     letter-spacing: 0.05em;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
     color: #fff;
   }
   
@@ -532,9 +533,10 @@
   .main-carousel-wrapper {
     position: relative;
     overflow: hidden;
-    border-radius: 24px;
+    border-radius: 20px;
     background: rgba(10, 15, 25, 0.3);
     backdrop-filter: blur(8px);
+    padding: 0;
   }
   .main-carousel {
     display: flex;
@@ -544,35 +546,38 @@
   .event-slide {
     flex: 0 0 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
-    padding: 40px;
-    align-items: center;
-    min-height: 500px;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 30px;
+    align-items: start;
+    min-height: auto;
   }
   .event-content {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     color: #fff;
   }
   .event-header h3 {
-    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
     margin: 0;
     letter-spacing: 0.04em;
     color: var(--accent);
   }
+  .event-header {
+    margin-bottom: 2px;
+  }
   .event-header p {
-    margin: 8px 0 0;
-    font-size: 1rem;
+    margin: 6px 0 0;
+    font-size: 0.95rem;
     color: rgba(226, 232, 240, 0.9);
-    line-height: 1.6;
+    line-height: 1.5;
   }
   .event-details {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    padding: 16px;
+    gap: 14px;
+    padding: 14px;
     background: rgba(255, 255, 255, 0.06);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -583,56 +588,55 @@
     gap: 4px;
   }
   .detail-label {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: rgba(226, 232, 240, 0.7);
     font-weight: 600;
   }
   .detail-value {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: rgba(226, 232, 240, 0.95);
     font-weight: 500;
   }
   .event-highlight {
-    padding: 16px;
+    padding: 14px;
     background: rgba(249, 115, 22, 0.12);
     border-left: 3px solid var(--accent);
     border-radius: 8px;
   }
   .event-highlight strong {
     color: var(--accent);
+    font-size: 0.9rem;
   }
   .event-highlight ul {
-    margin: 8px 0 0;
-    padding-left: 20px;
+    margin: 6px 0 0;
+    padding-left: 18px;
     list-style: none;
   }
   .event-highlight li {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: rgba(226, 232, 240, 0.9);
-    margin: 6px 0;
+    margin: 4px 0;
   }
   .event-footer {
     display: flex;
     gap: 12px;
     align-items: center;
-    margin-top: 12px;
+    margin-top: 8px;
   }
   .roadtrip-price {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: var(--accent);
   }
   .book-btn {
     flex: 1;
-    max-width: 200px;
+    min-width: 140px;
+    max-width: 180px;
   }
   
   /* Event Images Carousel */
   .event-images {
-    position: relative;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
+    display: none;
   }
   .event-carousel {
     position: relative;
@@ -718,39 +722,39 @@
   /* Main Carousel Indicators */
   .main-carousel-indicators {
     position: absolute;
-    bottom: 20px;
+    bottom: 16px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 10px;
+    gap: 8px;
     z-index: 30;
   }
   .indicator {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.35);
     border: 1px solid rgba(255, 255, 255, 0.2);
     cursor: pointer;
     transition: all 0.3s ease;
   }
   .indicator.active {
     background: var(--accent);
-    box-shadow: 0 0 12px rgba(249, 115, 22, 0.5);
+    box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
   }
   
   .roadtrip-pill {
-    padding: 10px 16px;
+    padding: 8px 14px;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.16);
     border: 1px solid rgba(255, 255, 255, 0.2);
     font-weight: 600;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    font-size: 0.78rem;
+    font-size: 0.7rem;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
   .roadtrip-sparkle {
     filter: drop-shadow(0 0 12px rgba(249, 115, 22, 0.45));
@@ -885,13 +889,35 @@
   @media (max-width:900px){
     .event-slide {
       grid-template-columns: 1fr;
-      gap: 24px;
+      gap: 20px;
       padding: 24px;
       min-height: auto;
     }
     .roadtrip-section{
-      margin:40px 16px;
-      padding:24px;
+      margin:32px 16px;
+      padding:20px;
+    }
+    .roadtrip-main-title {
+      margin-bottom: 24px;
+    }
+    .event-details {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 12px;
+    }
+    .event-highlight {
+      padding: 12px;
+    }
+    .event-highlight ul {
+      margin: 6px 0 0;
+    }
+    .event-highlight li {
+      font-size: 0.9rem;
+      margin: 4px 0;
+    }
+    .event-footer {
+      gap: 10px;
+      margin-top: 10px;
     }
     .main-carousel-btn {
       width: 40px;
@@ -908,13 +934,71 @@
   @media (max-width:520px){
     .event-slide {
       padding: 16px;
-      gap: 16px;
+      gap: 14px;
+    }
+    .roadtrip-section{
+      margin:24px 12px;
+      padding:16px;
+    }
+    .roadtrip-main-title {
+      font-size: clamp(1.4rem, 4vw, 1.8rem);
+      margin-bottom: 18px;
+    }
+    .event-header h3 {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+    }
+    .event-header p {
+      font-size: 0.9rem;
+      margin: 6px 0 0;
+    }
+    .event-details {
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 10px;
+    }
+    .detail-label {
+      font-size: 0.8rem;
+    }
+    .detail-value {
+      font-size: 0.9rem;
+    }
+    .event-highlight {
+      padding: 10px;
+    }
+    .event-highlight strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+    .event-highlight ul {
+      margin: 4px 0 0;
+      padding-left: 16px;
+    }
+    .event-highlight li {
+      font-size: 0.85rem;
+      margin: 3px 0;
+    }
+    .roadtrip-price {
+      font-size: 1.2rem;
+    }
+    .book-btn {
+      max-width: none;
+      min-width: auto;
+      flex: 1;
+    }
+    .event-footer {
+      flex-direction: column;
+      gap: 10px;
     }
     .event-carousel {
       min-height: 250px;
     }
-    .event-details {
-      grid-template-columns: 1fr;
+    .main-carousel-indicators {
+      bottom: 12px;
+      gap: 6px;
+    }
+    .indicator {
+      width: 8px;
+      height: 8px;
     }
     .main-carousel-btn {
       width: 36px;
@@ -1142,7 +1226,7 @@
     <!-- ===== Upcoming Roadtrips Carousel (3 main events) ===== -->
     <section class="roadtrip-section" id="roadtrip" role="region" aria-labelledby="roadtrip-heading">
       <div class="roadtrip-container">
-        <h2 id="roadtrip-heading" class="roadtrip-main-title">🔥 Upcoming Roadtrips</h2>
+        <h2 id="roadtrip-heading" class="roadtrip-main-title">Upcoming Roadtrips</h2>
         
         <!-- Main carousel -->
         <div class="main-carousel-wrapper">
@@ -1151,26 +1235,26 @@
             <div class="event-slide" data-event-id="1">
               <div class="event-content">
                 <div class="event-header">
-                  <div class="roadtrip-pill roadtrip-sparkle">✨ Next Adventure</div>
+                  <div class="roadtrip-pill roadtrip-sparkle">Next Adventure</div>
                   <h3>THIBA FALLS</h3>
                   <p>Safari tamu ya Kirinyaga - Experience breathtaking waterfalls with our curated matatu expedition.</p>
                 </div>
                 
                 <div class="event-details">
                   <div class="detail-item">
-                    <span class="detail-label">📅 Date</span>
+                    <span class="detail-label">Date</span>
                     <span class="detail-value">23 November 2024</span>
                   </div>
                   <div class="detail-item">
-                    <span class="detail-label">⏱️ Duration</span>
+                    <span class="detail-label">Duration</span>
                     <span class="detail-value">Full Day (8 hours)</span>
                   </div>
                   <div class="detail-item">
-                    <span class="detail-label">👥 Group Size</span>
-                    <span class="detail-value">Up to 15 people</span>
+                    <span class="detail-label">Group Size</span>
+                    <span class="detail-value">Up to 60 people</span>
                   </div>
                   <div class="detail-item">
-                    <span class="detail-label">📍 Location</span>
+                    <span class="detail-label">Location</span>
                     <span class="detail-value">Kirinyaga, Kenya</span>
                   </div>
                 </div>
@@ -1187,7 +1271,7 @@
                 </div>
 
                 <div class="event-footer">
-                  <span class="roadtrip-price">KES 2,200</span>
+                  <span class="roadtrip-price">KES 2,000</span>
                   <button class="cta book-btn" data-event-id="1" data-event-name="THIBA FALLS" data-event-price="2500">Book Your Seat</button>
                 </div>
               </div>
@@ -1208,26 +1292,26 @@
             <div class="event-slide" data-event-id="2">
               <div class="event-content">
                 <div class="event-header">
-                  <div class="roadtrip-pill roadtrip-sparkle">✨ Night Experience</div>
+                  <div class="roadtrip-pill roadtrip-sparkle">Night Experience</div>
                   <h3>CHROME JUNGLE NIGHT</h3>
                   <p>Urban nightlife exploration - Neon-lit streets, legendary matatu, and midnight photography sessions.</p>
                 </div>
                 
                 <div class="event-details">
                   <div class="detail-item">
-                    <span class="detail-label">📅 Date</span>
+                    <span class="detail-label">Date</span>
                     <span class="detail-value">29 November 2024</span>
                   </div>
                   <div class="detail-item">
-                    <span class="detail-label">⏱️ Duration</span>
+                    <span class="detail-label">⏱Duration</span>
                     <span class="detail-value">Evening (4 hours)</span>
                   </div>
                   <div class="detail-item">
-                    <span class="detail-label">👥 Group Size</span>
+                    <span class="detail-label">Group Size</span>
                     <span class="detail-value">Up to 12 people</span>
                   </div>
                   <div class="detail-item">
-                    <span class="detail-label">📍 Location</span>
+                    <span class="detail-label">Location</span>
                     <span class="detail-value">Nairobi CBD & Suburbs</span>
                   </div>
                 </div>
@@ -1265,26 +1349,26 @@
             <div class="event-slide" data-event-id="3">
               <div class="event-content">
                 <div class="event-header">
-                  <div class="roadtrip-pill roadtrip-sparkle">✨ Sunset Edition</div>
+                  <div class="roadtrip-pill roadtrip-sparkle">Sunset Edition</div>
                   <h3>GOLDEN HOUR SAFARI</h3>
                   <p>Cinematic golden hour sessions - Perfect lighting, perfect vibes, perfect content creation moments.</p>
                 </div>
                 
                 <div class="event-details">
                   <div class="detail-item">
-                    <span class="detail-label">📅 Date</span>
+                    <span class="detail-label">Date</span>
                     <span class="detail-value">5 December 2024</span>
                   </div>
                   <div class="detail-item">
-                    <span class="detail-label">⏱️ Duration</span>
+                    <span class="detail-label">Duration</span>
                     <span class="detail-value">Sunset (3 hours)</span>
                   </div>
                   <div class="detail-item">
-                    <span class="detail-label">👥 Group Size</span>
+                    <span class="detail-label">Group Size</span>
                     <span class="detail-value">Up to 10 people</span>
                   </div>
                   <div class="detail-item">
-                    <span class="detail-label">📍 Location</span>
+                    <span class="detail-label">Location</span>
                     <span class="detail-value">Coastal Route & Skyline</span>
                   </div>
                 </div>
@@ -1570,7 +1654,7 @@
   <div class="modal-backdrop" id="paymentModal" aria-hidden="true" role="dialog" aria-labelledby="payment-modal-title">
     <div class="modal-dialog">
       <button class="modal-close" data-close-payment-modal aria-label="Close payment modal">&times;</button>
-      <h3 id="payment-modal-title" style="color: white; margin-bottom: 24px; text-align: center;">💳 Complete Your Payment</h3>
+      <h3 id="payment-modal-title" style="color: white; margin-bottom: 24px; text-align: center;">Complete Your Payment</h3>
 
       <div id="paymentSummary" style="margin-bottom: 24px;"></div>
 
@@ -1581,7 +1665,7 @@
         <div style="position: absolute; top: 10%; right: 10%; width: 20px; height: 20px; background: rgba(249, 115, 22, 0.2); border-radius: 50%; animation: float 3s ease-in-out infinite;"></div>
         <div style="position: absolute; bottom: 15%; left: 15%; width: 15px; height: 15px; background: rgba(249, 115, 22, 0.15); border-radius: 50%; animation: float 4s ease-in-out infinite reverse;"></div>
 
-        <h4 style="color: var(--accent); margin: 0 0 20px; font-size: 1.1rem; text-align: center; position: relative; z-index: 2;">💰 Choose Your Payment Plan</h4>
+        <h4 style="color: var(--accent); margin: 0 0 20px; font-size: 1.1rem; text-align: center; position: relative; z-index: 2;">Choose Your Payment Plan</h4>
 
         <div style="display: flex; gap: 16px; flex-direction: column; position: relative; z-index: 2;">
           <!-- Deposit Option -->
@@ -1597,7 +1681,7 @@
                 <div style="background: linear-gradient(135deg, var(--accent), #ea580c); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Required</div>
               </div>
               <div style="font-size: 1rem; color: #666; font-weight: 600; margin-bottom: 4px;" id="depositAmountLabel">KES 0</div>
-              <div style="font-size: 0.85rem; color: rgba(249, 115, 22, 0.9); font-weight: 500;">🔒 Secure your spot • Pay balance later</div>
+              <div style="font-size: 0.85rem; color: rgba(249, 115, 22, 0.9); font-weight: 500;">Secure your spot • Pay balance later</div>
             </div>
 
             <div class="option-icon" style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #ea580c); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3); animation: bounce 1s ease-in-out infinite;">✓</div>
@@ -1616,7 +1700,7 @@
                 <div style="background: linear-gradient(135deg, #4ade80, #22c55e); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Best Deal</div>
               </div>
               <div style="font-size: 1rem; color: #666; font-weight: 600; margin-bottom: 4px;" id="fullAmountLabel">KES 0</div>
-              <div style="font-size: 0.85rem; color: rgba(76, 175, 80, 0.9); font-weight: 500;">✨ Complete payment • No balance due</div>
+              <div style="font-size: 0.85rem; color: rgba(76, 175, 80, 0.9); font-weight: 500;">Complete payment • No balance due</div>
             </div>
 
             <div class="option-icon" style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #4ade80, #22c55e); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);">★</div>
@@ -1691,11 +1775,11 @@
             <svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
             </svg>
-            Pay Securely with Paystack
+            Pay Now
           </span>
         </button>
         <p style="margin: 12px 0 0; font-size: 0.85rem; color: rgba(226, 232, 240, 0.7);">
-          🔒 Secure payment powered by Paystack • Instant confirmation
+          Secure payment powered by Paystack • Instant confirmation
         </p>
       </div>
 
@@ -1754,7 +1838,89 @@
   </section>
 
   <footer>
-    <div>&copy; <span id="year"></span> Groundflex Adventures — All rights reserved.</div>
+    <div class="footer-inner">
+      <div>&copy; <span id="year"></span> Groundflex Adventures — All rights reserved.</div>
+      <div class="powered">Powered by <a href="https://iyonicorp.com" target="_blank" rel="noopener noreferrer" class="iyonicorp">Iyonicorp</a></div>
+    </div>
+
+    <style>
+      .footer-inner{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:6px;
+        padding:18px 12px;
+        color:rgba(255,255,255,0.85);
+      }
+
+      .powered{ font-weight:700; font-size:0.95rem; margin-top:6px; }
+
+      /* Disco lights with gentler shake and visible colours */
+      .iyonicorp{
+        display:inline-block;
+        padding:6px 12px;
+        border-radius:999px;
+        font-weight:900;
+        letter-spacing:0.14em;
+        text-transform:uppercase;
+        background:
+          radial-gradient(circle at 10% 20%, #ff3864 0%, rgba(255,56,100,0.95) 12%, transparent 18%),
+          radial-gradient(circle at 70% 40%, #4ade80 0%, rgba(74,222,128,0.95) 10%, transparent 18%),
+          radial-gradient(circle at 40% 80%, #60a5fa 0%, rgba(96,165,250,0.95) 10%, transparent 18%),
+          linear-gradient(90deg, rgba(243, 255, 70, 0.04), rgba(255,255,255,0.02));
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent; /* ensure gradient shows in WebKit/Blink */
+        color: transparent;
+        text-shadow:
+          0 6px 14px rgba(255, 255, 255, 0.55),
+          0 0 10px rgba(255, 19, 19, 0.06);
+        transform-origin: center;
+        /* slower disco, gentler shake */
+        animation: disco 3500ms linear infinite, shake 1800ms ease-in-out infinite;
+        will-change: transform, background-position, filter;
+      }
+
+      /* color movement across the letters (slower so colours are more visible) */
+      @keyframes disco {
+        0% { background-position: 0% 50%, 0% 50%, 0% 50%, 0% 0%; filter: hue-rotate(0deg); }
+        25% { background-position: 50% 20%, 40% 60%, 20% 80%, 0% 0%; filter: hue-rotate(30deg); }
+        50% { background-position: 100% 50%, 80% 30%, 60% 40%, 0% 0%; filter: hue-rotate(60deg); }
+        75% { background-position: 40% 70%, 20% 10%, 90% 60%, 0% 0%; filter: hue-rotate(90deg); }
+        100% { background-position: 0% 50%, 0% 50%, 0% 50%, 0% 0%; filter: hue-rotate(120deg); }
+      }
+
+      /* gentler shaking sequence (reduced translation & rotation) */
+      @keyframes shake {
+        0% { transform: translate(0,0) rotate(0deg); }
+        10% { transform: translate(-3px,-1px) rotate(-1.2deg); }
+        20% { transform: translate(4px,2px) rotate(1.5deg); }
+        30% { transform: translate(-5px,3px) rotate(-2deg); }
+        40% { transform: translate(5px,-3px) rotate(2deg); }
+        50% { transform: translate(-4px,2px) rotate(-1.4deg); }
+        60% { transform: translate(4px,-1px) rotate(1deg); }
+        70% { transform: translate(-2px,1px) rotate(-0.8deg); }
+        80% { transform: translate(2px,-1px) rotate(0.8deg); }
+        90% { transform: translate(-1px,0.5px) rotate(-0.4deg); }
+        100% { transform: translate(0,0) rotate(0deg); }
+      }
+
+      /* Respect user's reduced motion preference */
+      @media (prefers-reduced-motion: reduce) {
+        .iyonicorp {
+          animation: none !important;
+          transform: none !important;
+          background-position: center !important;
+          -webkit-background-clip: unset;
+          background-clip: unset;
+          -webkit-text-fill-color: unset;
+          color: #ffb347; /* fallback colored text */
+          text-shadow: none;
+        }
+      }
+    </style>
   </footer>
 
 <script>
@@ -2026,7 +2192,7 @@
       }
 
       const handler = PaystackPop.setup({
-        key: 'pk_test_232531a5c927ef2cc67ed1b85af3f26e3b8ed2f2',
+        key: 'pk_live_7ab8e015626516d7d00210b2e7fe169805c226b8',
         email: email,
         amount: amountInCents,
         currency: 'KES',

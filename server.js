@@ -29,6 +29,9 @@ const ticketSchema = new mongoose.Schema({
   paymentReference: { type: String, required: true },
   paymentMethod: { type: String, required: true },
   isPaid: { type: Boolean, default: false },
+  isValidated: { type: Boolean, default: false },
+  validatedAt: { type: Date, default: null },
+  validatedBy: { type: String, default: null },
   timestamp: { type: Date, default: Date.now }
 });
 
@@ -190,6 +193,168 @@ app.post('/api/verify-payment', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Payment verification failed'
+    });
+  }
+});
+
+/**
+ * GET /api/tickets
+ * Retrieve all tickets for admin dashboard
+ */
+app.get('/api/tickets', async (req, res) => {
+  try {
+    const tickets = await Ticket.find({}).sort({ timestamp: -1 });
+    res.json({
+      success: true,
+      count: tickets.length,
+      tickets: tickets
+    });
+  } catch (error) {
+    console.error('Error retrieving tickets:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve tickets',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/users
+ * Retrieve all unique users for admin dashboard
+ */
+app.get('/api/users', async (req, res) => {
+  try {
+    const tickets = await Ticket.find({});
+    const users = {};
+    
+    tickets.forEach(ticket => {
+      if (!users[ticket.email]) {
+        users[ticket.email] = {
+          name: ticket.name,
+          email: ticket.email,
+          phone: ticket.phone || 'N/A',
+          ticketCount: 0,
+          totalSpent: 0,
+          firstBooking: ticket.timestamp
+        };
+      }
+      users[ticket.email].ticketCount += ticket.numberOfSeats;
+      users[ticket.email].totalSpent += ticket.totalPrice;
+      users[ticket.email].lastBooking = ticket.timestamp;
+    });
+
+    const userList = Object.values(users);
+    res.json({
+      success: true,
+      count: userList.length,
+      users: userList
+    });
+  } catch (error) {
+    console.error('Error retrieving users:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve users',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/user-tickets/:email
+ * Retrieve all tickets for a specific user
+ */
+app.get('/api/user-tickets/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    const tickets = await Ticket.find({ email: email }).sort({ timestamp: -1 });
+    
+    res.json({
+      success: true,
+      count: tickets.length,
+      tickets: tickets
+    });
+  } catch (error) {
+    console.error('Error retrieving user tickets:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve user tickets',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/ticket/:ticketNumber/validate
+ * Mark ticket as validated (used)
+ */
+app.post('/api/ticket/:ticketNumber/validate', async (req, res) => {
+  try {
+    const { ticketNumber } = req.params;
+    const { validatedBy } = req.body;
+
+    const ticket = await Ticket.findOneAndUpdate(
+      { ticketNumber: ticketNumber },
+      {
+        isValidated: true,
+        validatedAt: new Date(),
+        validatedBy: validatedBy || 'Admin'
+      },
+      { new: true }
+    );
+
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Ticket validated successfully',
+      ticket: ticket
+    });
+  } catch (error) {
+    console.error('Error validating ticket:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to validate ticket',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/ticket/:ticketNumber/unvalidate
+ * Mark ticket as not validated (undo validation)
+ */
+app.post('/api/ticket/:ticketNumber/unvalidate', async (req, res) => {
+  try {
+    const { ticketNumber } = req.params;
+
+    const ticket = await Ticket.findOneAndUpdate(
+      { ticketNumber: ticketNumber },
+      {
+        isValidated: false,
+        validatedAt: null,
+        validatedBy: null
+      },
+      { new: true }
+    );
+
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Ticket validation removed',
+      ticket: ticket
+    });
+  } catch (error) {
+    console.error('Error updating ticket:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update ticket',
+      message: error.message
     });
   }
 });

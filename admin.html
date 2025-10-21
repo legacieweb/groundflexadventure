@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Panel - Groundflex Adventures Ticket Management</title>
+  <meta name="description" content="Admin panel for managing and validating Groundflex Adventures tickets." />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600&family=Poppins:wght@400;600;700&display=swap');
+
+    :root {
+      --accent: #f97316;
+      --dark: #0f172a;
+      --muted: #94a3b8;
+      --glass: rgba(255, 255, 255, 0.06);
+      --transition: 220ms ease;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --error: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
+      color: var(--dark);
+      background: linear-gradient(135deg, #0a0e14 0%, #111 100%);
+      min-height: 100vh;
+      display: flex;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(10, 12, 24, 0.95));
+      backdrop-filter: blur(14px);
+      border-right: 1px solid rgba(255, 255, 255, 0.14);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 20px;
+      overflow-y: auto;
+      z-index: 100;
+      transition: transform 260ms ease;
+    }
+
+    .sidebar.mobile-hidden {
+      transform: translateX(-100%);
+    }
+
+    /* Sidebar Header */
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .sidebar-badge {
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(249, 115, 22, 0.85);
+      color: var(--dark);
+      font-weight: 700;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.9rem;
+      box-shadow: 0 0 18px rgba(249, 115, 22, 0.45);
+    }
+
+    .sidebar-title {
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 0.1em;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: white;
+    }
+
+    .sidebar-close {
+      display: none;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    /* Sidebar Menu */
+    .sidebar-menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sidebar-menu-item {
+      display: list-item;
+    }
+
+    .sidebar-menu-btn {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: rgba(226, 232, 240, 0.8);
+      cursor: pointer;
+      text-align: left;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-menu-btn:hover {
+      background: rgba(249, 115, 22, 0.15);
+      border-color: rgba(249, 115, 22, 0.4);
+      color: white;
+    }
+
+    .sidebar-menu-btn.active {
+      background: rgba(249, 115, 22, 0.25);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    /* Users Section */
+    .users-section {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .users-header {
+      color: rgba(226, 232, 240, 0.7);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .users-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .user-item {
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      color: rgba(226, 232, 240, 0.8);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all var(--transition);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(249, 115, 22, 0.4);
+      color: white;
+    }
+
+    .user-item.active {
+      background: rgba(249, 115, 22, 0.25);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    .main-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin-left: 280px;
+      position: relative;
+    }
+
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: linear-gradient(180deg, rgba(10, 17, 32, 0.82), rgba(15, 23, 42, 0.58));
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .toggle-sidebar-btn {
+      display: none;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: all var(--transition);
+    }
+
+    .toggle-sidebar-btn:hover {
+      background: rgba(249, 115, 22, 0.15);
+      border-color: rgba(249, 115, 22, 0.4);
+    }
+
+    .header-title {
+      color: white;
+      margin: 0;
+      font-size: 1.2rem;
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(226, 232, 240, 0.7);
+      font-size: 0.9rem;
+    }
+
+    /* Content Area */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    /* Search Box */
+    .search-box {
+      margin-bottom: 24px;
+    }
+
+    .search-input {
+      width: 100%;
+      max-width: 500px;
+      padding: 12px 16px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      transition: all var(--transition);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+
+    .search-input::placeholder {
+      color: rgba(226, 232, 240, 0.5);
+    }
+
+    /* Views */
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+      animation: fadeIn 300ms ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Users View */
+    .users-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .user-card {
+      background: linear-gradient(160deg, rgba(19, 28, 48, 0.88), rgba(15, 23, 42, 0.72));
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 12px 40px rgba(9, 12, 22, 0.4);
+      cursor: pointer;
+      transition: all var(--transition);
+      color: white;
+    }
+
+    .user-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(249, 115, 22, 0.4);
+      box-shadow: 0 16px 48px rgba(249, 115, 22, 0.15);
+    }
+
+    .user-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(249, 115, 22, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .user-card-info h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: white;
+    }
+
+    .user-card-info p {
+      margin: 4px 0 0;
+      font-size: 0.85rem;
+      color: rgba(226, 232, 240, 0.7);
+    }
+
+    .user-card-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      color: rgba(226, 232, 240, 0.8);
+    }
+
+    .meta-label {
+      color: rgba(226, 232, 240, 0.6);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-tickets {
+      background: rgba(249, 115, 22, 0.2);
+      color: var(--accent);
+      border: 1px solid rgba(249, 115, 22, 0.4);
+    }
+
+    /* User Details View */
+    .user-details-header {
+      background: linear-gradient(160deg, rgba(19, 28, 48, 0.88), rgba(15, 23, 42, 0.72));
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      margin-bottom: 24px;
+      color: white;
+    }
+
+    .user-details-title {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .user-details-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(249, 115, 22, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 1.8rem;
+    }
+
+    .user-details-info h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .user-details-info p {
+      margin: 4px 0 0;
+      color: rgba(226, 232, 240, 0.8);
+      font-size: 0.95rem;
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      transition: all var(--transition);
+      font-size: 0.9rem;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Tickets Table */
+    .tickets-section {
+      background: linear-gradient(160deg, rgba(19, 28, 48, 0.88), rgba(15, 23, 42, 0.72));
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(9, 12, 22, 0.4);
+    }
+
+    .tickets-header {
+      padding: 20px 24px;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .tickets-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .tickets-count {
+      background: rgba(249, 115, 22, 0.2);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .tickets-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .ticket-row {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: rgba(226, 232, 240, 0.9);
+    }
+
+    .ticket-row:last-child {
+      border-bottom: none;
+    }
+
+    .ticket-row:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .ticket-cell {
+      padding: 16px 24px;
+      font-size: 0.9rem;
+    }
+
+    .ticket-id {
+      font-family: 'Orbitron', monospace;
+      color: var(--accent);
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-valid {
+      background: rgba(76, 175, 80, 0.2);
+      color: #4ade80;
+      border: 1px solid rgba(76, 175, 80, 0.4);
+    }
+
+    .status-used {
+      background: rgba(249, 115, 22, 0.2);
+      color: var(--accent);
+      border: 1px solid rgba(249, 115, 22, 0.4);
+    }
+
+    .checkbox-cell {
+      text-align: center;
+    }
+
+    .ticket-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+
+    .no-tickets {
+      text-align: center;
+      padding: 40px 24px;
+      color: rgba(226, 232, 240, 0.6);
+    }
+
+    .no-tickets-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+
+    /* Ticket Lookup */
+    .ticket-lookup-card {
+      background: linear-gradient(160deg, rgba(19, 28, 48, 0.88), rgba(15, 23, 42, 0.72));
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      max-width: 600px;
+      margin: 0 auto;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      color: rgba(226, 232, 240, 0.9);
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      transition: all var(--transition);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: rgba(226, 232, 240, 0.5);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      transition: all var(--transition);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #ea580c);
+      color: white;
+      box-shadow: 0 8px 24px rgba(249, 115, 22, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(249, 115, 22, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Messages */
+    .message {
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 0.95rem;
+      animation: slideIn 300ms ease;
+    }
+
+    .message.visible {
+      display: block;
+    }
+
+    .message-success {
+      background: rgba(76, 175, 80, 0.1);
+      border-left: 4px solid #4ade80;
+      color: #86efac;
+    }
+
+    .message-error {
+      background: rgba(220, 38, 38, 0.1);
+      border-left: 4px solid #ef4444;
+      color: #fca5a5;
+    }
+
+    .message-warning {
+      background: rgba(255, 193, 7, 0.1);
+      border-left: 4px solid #fbbf24;
+      color: #fde047;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 240px;
+      }
+
+      .main-container {
+        margin-left: 240px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .toggle-sidebar-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sidebar {
+        width: 280px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        z-index: 200;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+      }
+
+      .sidebar.mobile-hidden {
+        transform: translateX(-100%);
+      }
+
+      .main-container {
+        margin-left: 0;
+      }
+
+      .sidebar-close {
+        display: block;
+      }
+
+      .sidebar-header {
+        margin-bottom: 20px;
+      }
+
+      .content {
+        padding: 16px;
+      }
+
+      .header {
+        padding: 12px 16px;
+        gap: 12px;
+      }
+
+      .header-title {
+        font-size: 1rem;
+      }
+
+      .users-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .user-card {
+        padding: 16px;
+      }
+
+      .ticket-cell {
+        padding: 12px 16px;
+        font-size: 0.85rem;
+      }
+
+      .ticket-id {
+        word-break: break-word;
+      }
+    }
+
+    /* ===== LOGIN MODAL ===== */
+    .login-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0e14 0%, #111 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(10px);
+    }
+
+    .login-modal.hidden {
+      display: none;
+    }
+
+    .login-card {
+      background: linear-gradient(160deg, rgba(19, 28, 48, 0.95), rgba(15, 23, 42, 0.9));
+      border-radius: 20px;
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 20px 60px rgba(9, 12, 22, 0.6);
+      max-width: 450px;
+      width: 90%;
+      text-align: center;
+      animation: modalFadeIn 0.5s ease;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .login-header {
+      margin-bottom: 30px;
+    }
+
+    .login-title {
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0 0 10px 0;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .login-subtitle {
+      color: rgba(226, 232, 240, 0.7);
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .login-input-group {
+      text-align: left;
+    }
+
+    .login-label {
+      display: block;
+      color: rgba(226, 232, 240, 0.9);
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      transition: all var(--transition);
+    }
+
+    .login-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+
+    .login-input::placeholder {
+      color: rgba(226, 232, 240, 0.5);
+    }
+
+    .login-btn {
+      padding: 16px 32px;
+      background: linear-gradient(135deg, var(--accent), #ea580c);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all var(--transition);
+      margin-top: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(249, 115, 22, 0.3);
+    }
+
+    .login-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .login-error {
+      background: rgba(220, 38, 38, 0.1);
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      color: #fca5a5;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .login-attempts {
+      color: rgba(226, 232, 240, 0.6);
+      font-size: 0.85rem;
+      margin-top: 15px;
+    }
+
+    .blocked-message {
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.3);
+      color: #fde047;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .blocked-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .blocked-text {
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
+    .download-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      transition: all var(--transition);
+    }
+
+    .download-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    @media (max-width: 520px) {
+      .header-right {
+        display: none;
+      }
+
+      .header-title {
+        font-size: 0.9rem;
+      }
+
+      .ticket-lookup-card {
+        padding: 16px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .btn {
+        flex: none;
+        width: 100%;
+      }
+
+      .login-card {
+        padding: 30px 20px;
+        margin: 20px;
+      }
+
+      .login-title {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+ <!-- Login Modal -->
+ <div id="loginModal" class="login-modal">
+   <div class="login-card">
+     <div class="login-header">
+       <h1 class="login-title">🔐 Admin Access</h1>
+       <p class="login-subtitle">Enter your credentials to access the admin dashboard</p>
+     </div>
+
+     <div id="blockedMessage" class="blocked-message" style="display: none;">
+       <div class="blocked-title">🚫 Access Blocked</div>
+       <div class="blocked-text">
+         Too many failed login attempts. You are blocked for 3 days.<br>
+         Please try again later or download the access information.
+       </div>
+       <button id="downloadBlockedBtn" class="download-btn">📄 Download Access Info</button>
+     </div>
+
+     <form id="loginForm" class="login-form">
+       <div class="login-input-group">
+         <label class="login-label" for="adminUsername">Username</label>
+         <input
+           type="text"
+           id="adminUsername"
+           class="login-input"
+           placeholder="Enter admin username"
+           required
+         >
+       </div>
+
+       <div class="login-input-group">
+         <label class="login-label" for="adminPassword">Password</label>
+         <input
+           type="password"
+           id="adminPassword"
+           class="login-input"
+           placeholder="Enter admin password"
+           required
+         >
+       </div>
+
+       <button type="submit" id="loginBtn" class="login-btn">🔓 Login</button>
+     </form>
+
+     <div id="loginError" class="login-error"></div>
+     <div id="attemptsInfo" class="login-attempts"></div>
+   </div>
+ </div>
+
+ <!-- Sidebar -->
+  <aside class="sidebar mobile-hidden">
+    <div class="sidebar-header">
+      <a href="index.html" class="sidebar-brand">
+        <span class="sidebar-badge">📊</span>
+        <span class="sidebar-title">Admin</span>
+      </a>
+      <button class="sidebar-close" id="sidebarClose">✕</button>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li class="sidebar-menu-item">
+        <button class="sidebar-menu-btn active" data-view="users">
+          👥 Users Management
+        </button>
+      </li>
+      <li class="sidebar-menu-item">
+        <button class="sidebar-menu-btn" data-view="ticket-lookup">
+          🎫 Ticket Lookup
+        </button>
+      </li>
+    </ul>
+
+    <div class="users-section">
+      <div class="users-header">All Users</div>
+      <div class="users-list" id="sidebarUsersList"></div>
+    </div>
+  </aside>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebarBtn">☰</button>
+        <h1 class="header-title">Ticket Management System</h1>
+      </div>
+      <div class="header-right">
+        <span id="adminTime"></span>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content">
+      <!-- Users View -->
+      <div class="view active" id="usersView">
+        <div class="search-box">
+          <input
+            type="text"
+            class="search-input"
+            id="userSearch"
+            placeholder="🔍 Search users by name or email..."
+          >
+        </div>
+        <div id="successMessage" class="message message-success"></div>
+        <div id="errorMessage" class="message message-error"></div>
+        <div class="users-grid" id="usersGrid"></div>
+        <div id="noUsersMessage" style="text-align: center; color: rgba(226, 232, 240, 0.6); padding: 40px 20px; display: none;">
+          <div style="font-size: 3rem; margin-bottom: 12px;">🔍</div>
+          <p>No users found. Bookings will appear here once customers complete a purchase.</p>
+        </div>
+      </div>
+
+      <!-- User Details View -->
+      <div class="view" id="userDetailsView">
+        <button class="back-btn" id="backToUsersBtn">← Back to Users</button>
+        
+        <div class="user-details-header" id="userDetailsHeader"></div>
+
+        <div class="tickets-section">
+          <div class="tickets-header">
+            <span class="tickets-title">📋 Tickets</span>
+            <span class="tickets-count" id="ticketsCount">0 tickets</span>
+          </div>
+          <table class="tickets-table" id="ticketsTable">
+            <thead style="display: none;"></thead>
+            <tbody id="ticketsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Ticket Lookup View -->
+      <div class="view" id="ticketLookupView">
+        <div class="ticket-lookup-card">
+          <h2 style="margin-top: 0; color: white; font-size: 1.3rem;">🎫 Search Ticket</h2>
+          
+          <div id="lookupMessage" class="message"></div>
+
+          <form id="ticketLookupForm">
+            <div class="form-group">
+              <label class="form-label">Ticket ID *</label>
+              <input
+                type="text"
+                class="form-input"
+                id="lookupTicketId"
+                placeholder="e.g., GF-ABC123-XYZ789"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Email Address *</label>
+              <input
+                type="email"
+                class="form-input"
+                id="lookupEmail"
+                placeholder="your@email.com"
+                required
+              >
+            </div>
+
+            <div class="button-group">
+              <button type="submit" class="btn btn-primary">🔍 Search</button>
+              <button type="reset" class="btn btn-secondary">Clear</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="lookupResults"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000/api';
+
+    // ===== ADMIN LOGIN SYSTEM =====
+    const AdminLogin = {
+      adminUsername: 'admin',
+      adminPassword: 'groundflex2024',
+      maxAttempts: 3,
+      blockDuration: 3 * 24 * 60 * 60 * 1000, // 3 days in milliseconds
+
+      init() {
+        this.checkLoginStatus();
+        this.setupEventListeners();
+        this.updateAttemptsDisplay();
+      },
+
+      setupEventListeners() {
+        const loginForm = document.getElementById('loginForm');
+        const downloadBtn = document.getElementById('downloadBlockedBtn');
+
+        loginForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.handleLogin();
+        });
+
+        downloadBtn.addEventListener('click', () => {
+          this.generateBlockedPDF();
+        });
+      },
+
+      checkLoginStatus() {
+        const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+        const blockUntil = localStorage.getItem('adminBlockUntil');
+
+        if (blockUntil) {
+          const blockTime = parseInt(blockUntil);
+          const now = Date.now();
+
+          if (now < blockTime) {
+            this.showBlockedState(blockTime);
+            return;
+          } else {
+            // Block period expired, clear block
+            localStorage.removeItem('adminBlockUntil');
+            localStorage.removeItem('adminFailedAttempts');
+          }
+        }
+
+        if (isLoggedIn) {
+          this.hideLoginModal();
+        } else {
+          this.showLoginModal();
+        }
+      },
+
+      handleLogin() {
+        const username = document.getElementById('adminUsername').value.trim();
+        const password = document.getElementById('adminPassword').value;
+
+        if (this.isBlocked()) {
+          this.showError('Access is blocked. Please try again later.');
+          return;
+        }
+
+        if (username === this.adminUsername && password === this.adminPassword) {
+          this.loginSuccess();
+        } else {
+          this.loginFailed();
+        }
+      },
+
+      loginSuccess() {
+        localStorage.setItem('adminLoggedIn', 'true');
+        localStorage.removeItem('adminFailedAttempts');
+        localStorage.removeItem('adminBlockUntil');
+        this.hideLoginModal();
+        this.showSuccessMessage('Welcome to the Admin Dashboard!');
+      },
+
+      loginFailed() {
+        let attempts = parseInt(localStorage.getItem('adminFailedAttempts') || '0');
+        attempts++;
+
+        if (attempts >= this.maxAttempts) {
+          const blockUntil = Date.now() + this.blockDuration;
+          localStorage.setItem('adminBlockUntil', blockUntil.toString());
+          localStorage.setItem('adminFailedAttempts', attempts.toString());
+          this.showBlockedState(blockUntil);
+          this.generateBlockedPDF();
+        } else {
+          localStorage.setItem('adminFailedAttempts', attempts.toString());
+          this.showError(`Invalid credentials. ${this.maxAttempts - attempts} attempts remaining.`);
+          this.updateAttemptsDisplay();
+        }
+      },
+
+      isBlocked() {
+        const blockUntil = localStorage.getItem('adminBlockUntil');
+        if (!blockUntil) return false;
+
+        const blockTime = parseInt(blockUntil);
+        return Date.now() < blockTime;
+      },
+
+      showBlockedState(blockUntil) {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('blockedMessage').style.display = 'block';
+
+        const remainingTime = Math.ceil((blockUntil - Date.now()) / (1000 * 60 * 60 * 24));
+        document.querySelector('.blocked-text').innerHTML = `
+          Too many failed login attempts. You are blocked for ${remainingTime} days.<br>
+          Please try again later or download the access information.
+        `;
+      },
+
+      showLoginModal() {
+        document.getElementById('loginModal').classList.remove('hidden');
+      },
+
+      hideLoginModal() {
+        document.getElementById('loginModal').classList.add('hidden');
+      },
+
+      showError(message) {
+        const errorDiv = document.getElementById('loginError');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        setTimeout(() => {
+          errorDiv.style.display = 'none';
+        }, 5000);
+      },
+
+      showSuccessMessage(message) {
+        // Use existing message system
+        AdminUI.showMessage(message, 'success');
+      },
+
+      updateAttemptsDisplay() {
+        const attempts = parseInt(localStorage.getItem('adminFailedAttempts') || '0');
+        const attemptsDiv = document.getElementById('attemptsInfo');
+
+        if (attempts > 0 && attempts < this.maxAttempts) {
+          attemptsDiv.textContent = `${attempts} failed attempt${attempts > 1 ? 's' : ''}. ${this.maxAttempts - attempts} remaining.`;
+        } else {
+          attemptsDiv.textContent = '';
+        }
+      },
+
+      generateBlockedPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Set background color
+        doc.setFillColor(15, 23, 42); // Dark background
+        doc.rect(0, 0, 210, 297, 'F');
+
+        // Title
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(24);
+        doc.setTextColor(249, 115, 22); // Orange color
+        doc.text('Access Blocked', 105, 40, { align: 'center' });
+
+        // Subtitle
+        doc.setFontSize(16);
+        doc.setTextColor(255, 255, 255);
+        doc.text('Welcome to try again in 3 days 😢', 105, 60, { align: 'center' });
+
+        // Message
+        doc.setFontSize(12);
+        doc.setTextColor(226, 232, 240);
+        const message = [
+          'You have exceeded the maximum number of login attempts.',
+          '',
+          'Your account has been temporarily blocked for security reasons.',
+          '',
+          'Block Duration: 3 days',
+          '',
+          'Please wait until the block period expires before attempting to log in again.',
+          '',
+          'This is not an error, ',
+          'no need to contact system support.',
+          '',
+          'Remember: Only authorized administrators should access this system.'
+        ];
+
+        let yPosition = 80;
+        message.forEach(line => {
+          doc.text(line, 105, yPosition, { align: 'center' });
+          yPosition += 8;
+        });
+
+        // Footer
+        doc.setFontSize(10);
+        doc.setTextColor(148, 163, 184);
+        doc.text('Groundflex Adventures - Admin System', 105, 280, { align: 'center' });
+        doc.text(`Generated: ${new Date().toLocaleString()}`, 105, 290, { align: 'center' });
+
+        // Download the PDF
+        doc.save('admin_access_blocked.pdf');
+      }
+    };
+
+    // ===== DATA MANAGEMENT =====
+    const AdminAPI = {
+      // Initialize admin
+      async init() {
+        // Load data from MongoDB
+        await this.getAllTickets();
+        await this.getAllUsers();
+      },
+
+      // Save a new ticket
+      async saveTicket(ticketData) {
+        try {
+          const response = await fetch(`${API_URL}/store-ticket`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ticketNumber: ticketData.ticketNumber || this.generateTicketId(),
+              name: ticketData.name,
+              email: ticketData.email,
+              phone: ticketData.phone || '',
+              eventName: ticketData.eventName,
+              eventDate: ticketData.eventDate,
+              eventLocation: ticketData.eventLocation || '',
+              numberOfSeats: ticketData.numberOfSeats || 1,
+              pricePerSeat: ticketData.pricePerSeat || ticketData.price,
+              totalPrice: ticketData.totalPrice || ticketData.price,
+              amountPaid: ticketData.amountPaid || ticketData.price,
+              paymentType: ticketData.paymentType || 'Paid',
+              paymentReference: ticketData.paymentReference || ticketData.paymentRef || '',
+              paymentMethod: ticketData.paymentMethod || 'Card',
+              isPaid: true
+            })
+          });
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.error('Error saving ticket:', error);
+          return { success: false, error: error.message };
+        }
+      },
+
+      // Get all tickets
+      async getAllTickets() {
+        try {
+          const response = await fetch(`${API_URL}/tickets`);
+          const data = await response.json();
+          return data.tickets || [];
+        } catch (error) {
+          console.error('Error fetching tickets:', error);
+          return [];
+        }
+      },
+
+      // Get user's tickets
+      async getUserTickets(email) {
+        try {
+          const response = await fetch(`${API_URL}/user-tickets/${encodeURIComponent(email)}`);
+          const data = await response.json();
+          return data.tickets || [];
+        } catch (error) {
+          console.error('Error fetching user tickets:', error);
+          return [];
+        }
+      },
+
+      // Get ticket by ticket number
+      async getTicketByNumber(ticketNumber, email) {
+        try {
+          const response = await fetch(`${API_URL}/ticket/${encodeURIComponent(ticketNumber)}?email=${encodeURIComponent(email)}`);
+          const data = await response.json();
+          return data.ticket || null;
+        } catch (error) {
+          console.error('Error fetching ticket:', error);
+          return null;
+        }
+      },
+
+      // Mark ticket as used/validated
+      async markTicketAsUsed(ticketNumber) {
+        try {
+          const response = await fetch(`${API_URL}/ticket/${encodeURIComponent(ticketNumber)}/validate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ validatedBy: 'Admin' })
+          });
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.error('Error validating ticket:', error);
+          return { success: false, error: error.message };
+        }
+      },
+
+      // Mark ticket as valid (undo validation)
+      async markTicketAsValid(ticketNumber) {
+        try {
+          const response = await fetch(`${API_URL}/ticket/${encodeURIComponent(ticketNumber)}/unvalidate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.error('Error un-validating ticket:', error);
+          return { success: false, error: error.message };
+        }
+      },
+
+      // Get all users
+      async getAllUsers() {
+        try {
+          const response = await fetch(`${API_URL}/users`);
+          const data = await response.json();
+          return data.users || [];
+        } catch (error) {
+          console.error('Error fetching users:', error);
+          return [];
+        }
+      },
+
+      // Generate unique ticket ID
+      generateTicketId() {
+        return `GF-${Math.random().toString(36).substr(2, 6).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+      }
+    };
+
+    // ===== UI MANAGEMENT =====
+    const AdminUI = {
+      currentView: 'users',
+      currentUser: null,
+
+      async init() {
+        this.setupEventListeners();
+        await AdminAPI.init();
+        await this.renderUsersView();
+        this.updateTime();
+        setInterval(() => this.updateTime(), 1000);
+      },
+
+      setupEventListeners() {
+        // Sidebar
+        document.getElementById('toggleSidebarBtn').addEventListener('click', () => {
+          this.toggleSidebar();
+        });
+        document.getElementById('sidebarClose').addEventListener('click', () => {
+          this.closeSidebar();
+        });
+
+        // Menu buttons
+        document.querySelectorAll('.sidebar-menu-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            this.switchView(e.target.closest('.sidebar-menu-btn').dataset.view).catch(err => console.error('View switch error:', err));
+          });
+        });
+
+        // User search
+        document.getElementById('userSearch').addEventListener('input', (e) => {
+          this.searchUsers(e.target.value).catch(err => console.error('Search error:', err));
+        });
+
+        // Back button
+        document.getElementById('backToUsersBtn').addEventListener('click', () => {
+          this.switchView('users');
+        });
+
+        // Ticket lookup form
+        document.getElementById('ticketLookupForm').addEventListener('submit', (e) => {
+          this.handleTicketLookup(e).catch(err => console.error('Lookup error:', err));
+        });
+
+        // Close sidebar on backdrop click (mobile)
+        document.addEventListener('click', (e) => {
+          if (window.innerWidth <= 768 && e.target === document.querySelector('.sidebar')) {
+            this.closeSidebar();
+          }
+        });
+      },
+
+      toggleSidebar() {
+        document.querySelector('.sidebar').classList.toggle('mobile-hidden');
+      },
+
+      closeSidebar() {
+        if (window.innerWidth <= 768) {
+          document.querySelector('.sidebar').classList.add('mobile-hidden');
+        }
+      },
+
+      async switchView(viewName) {
+        // Hide all views
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        // Show selected view
+        document.getElementById(viewName + 'View').classList.add('active');
+        
+        // Update menu
+        document.querySelectorAll('.sidebar-menu-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
+
+        this.currentView = viewName;
+
+        // Render appropriate view
+        if (viewName === 'users') {
+          await this.renderUsersView();
+        }
+
+        this.closeSidebar();
+      },
+
+      async renderUsersView() {
+        const users = await AdminAPI.getAllUsers();
+        const tickets = await AdminAPI.getAllTickets();
+        
+        const usersArray = users.map(user => ({
+          ...user,
+          ticketCount: tickets.filter(t => t.email === user.email).length
+        }));
+
+        const grid = document.getElementById('usersGrid');
+        const noMessage = document.getElementById('noUsersMessage');
+
+        if (usersArray.length === 0) {
+          grid.innerHTML = '';
+          noMessage.style.display = 'block';
+          return;
+        }
+
+        noMessage.style.display = 'none';
+        grid.innerHTML = usersArray.map(user => `
+          <div class="user-card" onclick="AdminUI.viewUserDetails('${user.email}')">
+            <div class="user-card-header">
+              <div class="user-avatar">${user.name.charAt(0).toUpperCase()}</div>
+              <div class="user-card-info">
+                <h3>${this.escapeHtml(user.name)}</h3>
+                <p>${this.escapeHtml(user.email)}</p>
+              </div>
+            </div>
+            <div class="user-card-meta">
+              <div class="meta-row">
+                <span class="meta-label">📱 Phone:</span>
+                <span>${this.escapeHtml(user.phone || 'N/A')}</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">Tickets:</span>
+                <span class="badge badge-tickets">${user.ticketCount}</span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      },
+
+      async searchUsers(query) {
+        const users = await AdminAPI.getAllUsers();
+        const tickets = await AdminAPI.getAllTickets();
+        const searchTerm = query.toLowerCase();
+
+        const filtered = users
+          .filter(user => 
+            user.email.toLowerCase().includes(searchTerm) || 
+            user.name.toLowerCase().includes(searchTerm)
+          )
+          .map(user => ({
+            ...user,
+            ticketCount: tickets.filter(t => t.email === user.email).length
+          }));
+
+        const grid = document.getElementById('usersGrid');
+        const noMessage = document.getElementById('noUsersMessage');
+
+        if (filtered.length === 0) {
+          grid.innerHTML = '';
+          noMessage.style.display = 'block';
+          noMessage.innerHTML = `<div style="font-size: 3rem; margin-bottom: 12px;">🔍</div><p>No users match "${this.escapeHtml(query)}"</p>`;
+          return;
+        }
+
+        noMessage.style.display = 'none';
+        grid.innerHTML = filtered.map(user => `
+          <div class="user-card" onclick="AdminUI.viewUserDetails('${user.email}')">
+            <div class="user-card-header">
+              <div class="user-avatar">${user.name.charAt(0).toUpperCase()}</div>
+              <div class="user-card-info">
+                <h3>${this.escapeHtml(user.name)}</h3>
+                <p>${this.escapeHtml(user.email)}</p>
+              </div>
+            </div>
+            <div class="user-card-meta">
+              <div class="meta-row">
+                <span class="meta-label">📱 Phone:</span>
+                <span>${this.escapeHtml(user.phone || 'N/A')}</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">Tickets:</span>
+                <span class="badge badge-tickets">${user.ticketCount}</span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      },
+
+      async viewUserDetails(email) {
+        this.currentUser = email;
+        const users = await AdminAPI.getAllUsers();
+        const user = users.find(u => u.email === email);
+        const tickets = await AdminAPI.getUserTickets(email);
+
+        // Update header
+        const headerHtml = `
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="user-details-avatar">${user.name.charAt(0).toUpperCase()}</div>
+            <div class="user-details-info">
+              <h2>${this.escapeHtml(user.name)}</h2>
+              <p>📧 ${this.escapeHtml(email)}</p>
+              <p>📱 ${this.escapeHtml(user.phone || 'N/A')}</p>
+            </div>
+          </div>
+        `;
+        document.getElementById('userDetailsHeader').innerHTML = headerHtml;
+
+        // Update tickets table
+        document.getElementById('ticketsCount').textContent = `${tickets.length} ticket${tickets.length !== 1 ? 's' : ''}`;
+        const tbody = document.getElementById('ticketsTableBody');
+        
+        if (tickets.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" style="padding: 40px 24px;">
+                <div style="text-align: center; color: rgba(226, 232, 240, 0.6);">
+                  <div style="font-size: 3rem; margin-bottom: 12px;">📭</div>
+                  <p>No tickets for this user</p>
+                </div>
+              </td>
+            </tr>
+          `;
+        } else {
+          tbody.innerHTML = `
+            <tr style="background: rgba(255, 255, 255, 0.04); border-bottom: 2px solid rgba(255, 255, 255, 0.08);">
+              <th style="padding: 12px 24px; text-align: left; color: rgba(226, 232, 240, 0.7); font-weight: 600;">Ticket ID</th>
+              <th style="padding: 12px 24px; text-align: left; color: rgba(226, 232, 240, 0.7); font-weight: 600;">Event</th>
+              <th style="padding: 12px 24px; text-align: left; color: rgba(226, 232, 240, 0.7); font-weight: 600;">Date</th>
+              <th style="padding: 12px 24px; text-align: left; color: rgba(226, 232, 240, 0.7); font-weight: 600;">Status</th>
+              <th style="padding: 12px 24px; text-align: center; color: rgba(226, 232, 240, 0.7); font-weight: 600;">Mark Used</th>
+            </tr>
+            ${tickets.map(ticket => `
+              <tr class="ticket-row">
+                <td class="ticket-cell"><span class="ticket-id">${this.escapeHtml(ticket.ticketNumber)}</span></td>
+                <td class="ticket-cell">${this.escapeHtml(ticket.eventName || 'N/A')}</td>
+                <td class="ticket-cell">${new Date(ticket.eventDate || ticket.timestamp).toLocaleDateString()}</td>
+                <td class="ticket-cell">
+                  <span class="status-badge ${ticket.isValidated ? 'status-used' : 'status-valid'}">
+                    ${ticket.isValidated ? '✓ Used' : '✓ Valid'}
+                  </span>
+                </td>
+                <td class="ticket-cell checkbox-cell">
+                  <input 
+                    type="checkbox" 
+                    class="ticket-checkbox"
+                    ${ticket.isValidated ? 'checked' : ''}
+                    onchange="AdminUI.toggleTicketStatus('${ticket.ticketNumber}', this.checked)"
+                  >
+                </td>
+              </tr>
+            `).join('')}
+          `;
+        }
+
+        this.switchView('userDetails');
+      },
+
+      async toggleTicketStatus(ticketNumber, isUsed) {
+        if (isUsed) {
+          await AdminAPI.markTicketAsUsed(ticketNumber);
+        } else {
+          await AdminAPI.markTicketAsValid(ticketNumber);
+        }
+
+        // Show success message
+        this.showMessage('Ticket status updated successfully!', 'success');
+
+        // Refresh current user details
+        await this.viewUserDetails(this.currentUser);
+      },
+
+      async handleTicketLookup(e) {
+        e.preventDefault();
+        const ticketNumber = document.getElementById('lookupTicketId').value.trim();
+        const email = document.getElementById('lookupEmail').value.trim();
+        const resultsDiv = document.getElementById('lookupResults');
+        const messageDiv = document.getElementById('lookupMessage');
+
+        messageDiv.classList.remove('visible');
+        resultsDiv.innerHTML = '';
+
+        const ticket = await AdminAPI.getTicketByNumber(ticketNumber, email);
+
+        if (!ticket) {
+          this.showMessage('Ticket not found or email does not match', 'error', messageDiv);
+          return;
+        }
+
+        const users = await AdminAPI.getAllUsers();
+        const user = users.find(u => u.email === email);
+
+        const statusClass = ticket.isValidated ? 'status-used' : 'status-valid';
+        const statusText = ticket.isValidated ? '✓ USED' : '✓ VALID';
+        const statusIcon = ticket.isValidated ? '🔴' : '🟢';
+
+        resultsDiv.innerHTML = `
+          <div class="ticket-lookup-card">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <div style="font-size: 3rem; margin-bottom: 10px;">${statusIcon}</div>
+              <h3 style="color: white; margin: 0; font-size: 1.3rem;">Ticket ${statusText}</h3>
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.04); border-radius: 12px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 20px;">
+              <div style="display: grid; grid-template-columns: 1fr; gap: 16px; color: rgba(226, 232, 240, 0.9);">
+                <div>
+                  <div style="font-size: 0.85rem; color: rgba(226, 232, 240, 0.6); margin-bottom: 4px;">Ticket ID</div>
+                  <div style="font-family: Orbitron; font-weight: 600; color: var(--accent); word-break: break-all;">${this.escapeHtml(ticket.ticketNumber)}</div>
+                </div>
+                <div>
+                  <div style="font-size: 0.85rem; color: rgba(226, 232, 240, 0.6); margin-bottom: 4px;">Passenger Name</div>
+                  <div style="font-weight: 600;">${this.escapeHtml(user.name)}</div>
+                </div>
+                <div>
+                  <div style="font-size: 0.85rem; color: rgba(226, 232, 240, 0.6); margin-bottom: 4px;">Event</div>
+                  <div style="font-weight: 600;">${this.escapeHtml(ticket.eventName || 'N/A')}</div>
+                </div>
+                <div>
+                  <div style="font-size: 0.85rem; color: rgba(226, 232, 240, 0.6); margin-bottom: 4px;">Purchase Date</div>
+                  <div style="font-weight: 600;">${new Date(ticket.timestamp).toLocaleDateString()}</div>
+                </div>
+                ${ticket.isValidated ? `
+                  <div>
+                    <div style="font-size: 0.85rem; color: rgba(226, 232, 240, 0.6); margin-bottom: 4px;">Validated Date</div>
+                    <div style="font-weight: 600;">${new Date(ticket.validatedAt).toLocaleDateString()}</div>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <div style="text-align: center; color: rgba(226, 232, 240, 0.7); padding: 20px; background: rgba(255, 255, 255, 0.04); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
+              ${ticket.isValidated 
+                ? '<p>✓ This ticket has already been validated and scanned.</p>' 
+                : '<p>✓ This ticket is valid and ready to use.</p>'}
+            </div>
+          </div>
+        `;
+
+        this.showMessage('Ticket found!', 'success', messageDiv);
+      },
+
+      showMessage(text, type, container = null) {
+        const msg = container || document.getElementById('successMessage');
+        msg.textContent = text;
+        msg.className = `message ${type === 'success' ? 'message-success' : 'message-error'} visible`;
+        setTimeout(() => msg.classList.remove('visible'), 4000);
+      },
+
+      updateTime() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: true 
+        });
+        document.getElementById('adminTime').textContent = timeStr;
+      },
+
+      async updateSidebarUsers() {
+        const users = await AdminAPI.getAllUsers();
+        const list = document.getElementById('sidebarUsersList');
+
+        if (users.length === 0) {
+          list.innerHTML = '<div style="padding: 12px; text-align: center; color: rgba(226, 232, 240, 0.5); font-size: 0.85rem;">No users yet</div>';
+          return;
+        }
+
+        list.innerHTML = users.map(user => `
+          <div 
+            class="user-item ${this.currentUser === user.email ? 'active' : ''}"
+            onclick="AdminUI.viewUserDetails('${user.email}')"
+            title="${user.name}"
+          >
+            ${user.name}
+          </div>
+        `).join('');
+      },
+
+      escapeHtml(text) {
+        const map = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+      }
+    };
+
+    // ===== INITIALIZATION =====
+    document.addEventListener('DOMContentLoaded', async () => {
+      AdminLogin.init();
+      await AdminUI.init();
+    });
+
+    // ===== INTEGRATION WITH BOOKING SYSTEM =====
+    // This function will be called from the main booking system
+    window.saveBookingTicket = async function(bookingData) {
+      await AdminAPI.saveTicket(bookingData);
+      await AdminUI.renderUsersView();
+      await AdminUI.updateSidebarUsers();
+    };
+
+    // ===== SAMPLE DATA FOR TESTING =====
+    // Uncomment to add sample data
+    async function addSampleData() {
+      // Save sample user with tickets
+      await AdminAPI.saveTicket({
+        name: 'John Doe',
+        email: 'john@example.com',
+        phone: '+254 712 345 678',
+        eventName: 'THIBA FALLS',
+        eventDate: new Date().toISOString(),
+        numberOfSeats: 1,
+        price: 2000,
+        paymentRef: 'SAMPLE-001'
+      });
+
+      await AdminAPI.saveTicket({
+        name: 'Jane Smith',
+        email: 'jane@example.com',
+        phone: '+254 701 234 567',
+        eventName: 'CHROME JUNGLE NIGHT',
+        eventDate: new Date().toISOString(),
+        numberOfSeats: 2,
+        price: 3500,
+        paymentRef: 'SAMPLE-002'
+      });
+
+      await AdminAPI.saveTicket({
+        name: 'Mike Johnson',
+        email: 'mike@example.com',
+        phone: '+254 700 123 456',
+        eventName: 'GOLDEN HOUR SAFARI',
+        eventDate: new Date().toISOString(),
+        numberOfSeats: 1,
+        price: 4000,
+        paymentRef: 'SAMPLE-003'
+      });
+
+      await AdminUI.renderUsersView();
+      await AdminUI.updateSidebarUsers();
+    }
+
+    // addSampleData(); // Uncomment this line to add sample data for testing
+  </script>
+</body>
+</html>
