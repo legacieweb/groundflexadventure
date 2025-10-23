@@ -1183,12 +1183,10 @@
   </div>
 
   <script>
-    const API_URL = 'https://groundflexadventure-1.onrender.com/api';
+    const API_URL = 'http://localhost:3000/api';
 
     // ===== ADMIN LOGIN SYSTEM =====
     const AdminLogin = {
-      adminUsername: 'admin',
-      adminPassword: 'groundflex2024',
       maxAttempts: 3,
       blockDuration: 3 * 24 * 60 * 60 * 1000, // 3 days in milliseconds
 
@@ -1237,7 +1235,7 @@
         }
       },
 
-      handleLogin() {
+      async handleLogin() {
         const username = document.getElementById('adminUsername').value.trim();
         const password = document.getElementById('adminPassword').value;
 
@@ -1246,10 +1244,27 @@
           return;
         }
 
-        if (username === this.adminUsername && password === this.adminPassword) {
-          this.loginSuccess();
-        } else {
-          this.loginFailed();
+        if (!username || !password) {
+          this.showError('Username and password are required.');
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/admin/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            this.loginSuccess();
+          } else {
+            this.loginFailed(data.error || 'Invalid credentials.');
+          }
+        } catch (error) {
+          this.showError('Unable to connect to the server. Please try again.');
         }
       },
 
@@ -1261,21 +1276,24 @@
         this.showSuccessMessage('Welcome to the Admin Dashboard!');
       },
 
-      loginFailed() {
+      loginFailed(message) {
         let attempts = parseInt(localStorage.getItem('adminFailedAttempts') || '0');
         attempts++;
+
+        localStorage.setItem('adminFailedAttempts', attempts.toString());
 
         if (attempts >= this.maxAttempts) {
           const blockUntil = Date.now() + this.blockDuration;
           localStorage.setItem('adminBlockUntil', blockUntil.toString());
-          localStorage.setItem('adminFailedAttempts', attempts.toString());
+          this.showError('Too many failed attempts. Access is blocked.');
           this.showBlockedState(blockUntil);
           this.generateBlockedPDF();
-        } else {
-          localStorage.setItem('adminFailedAttempts', attempts.toString());
-          this.showError(`Invalid credentials. ${this.maxAttempts - attempts} attempts remaining.`);
-          this.updateAttemptsDisplay();
+          return;
         }
+
+        const remaining = this.maxAttempts - attempts;
+        this.showError(message || `Invalid credentials. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`);
+        this.updateAttemptsDisplay();
       },
 
       isBlocked() {

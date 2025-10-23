@@ -367,6 +367,31 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
 
+app.post('/api/admin/login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({
+      success: false,
+      error: 'Username and password are required'
+    });
+  }
+
+  if (
+    username === process.env.ADMIN_USERNAME &&
+    password === process.env.ADMIN_PASSWORD
+  ) {
+    return res.json({
+      success: true
+    });
+  }
+
+  res.status(401).json({
+    success: false,
+    error: 'Invalid credentials'
+  });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
